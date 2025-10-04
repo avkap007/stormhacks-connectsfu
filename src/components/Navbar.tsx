@@ -27,7 +27,7 @@ export default function Navbar() {
             <Link href="#home" className="hover:text-ceil transition-colors duration-200">
               Home
             </Link>
-            <Link href="#discover" className="hover:text-ceil transition-colors duration-200">
+            <Link href="/events" className="hover:text-ceil transition-colors duration-200">
               Discover
             </Link>
             <Link href="#feedback" className="hover:text-ceil transition-colors duration-200">
@@ -75,7 +75,7 @@ export default function Navbar() {
               Home
             </Link>
             <Link 
-              href="#discover" 
+              href="/events" 
               onClick={() => setIsOpen(false)}
               className="text-lg font-medium text-chinese-blue hover:text-ceil transition-colors"
             >
