@@ -1,4 +1,5 @@
 import Navbar from "@/components/Navbar";
+import { DemoCarousel } from "@/components/FramerAutoCarousel"; 
 
 export default function Home() {
   return (
@@ -15,6 +16,9 @@ export default function Home() {
               Find events, make friends, and discover your SFU community! Never go to an event alone again.
             </p>
           </div>
+
+          {/* Carousel */}
+          <DemoCarousel />
 
           {/* Sample event card with glass effect */}
           <div className="max-w-lg mx-auto">
