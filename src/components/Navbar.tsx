@@ -3,9 +3,13 @@
 import Link from "next/link";
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { useAuth } from "@/contexts/AuthContext";
+import AuthModal from "./AuthModal";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const { user, signOut } = useAuth();
 
   return (
     <header className="fixed top-0 left-0 w-full bg-white/20 backdrop-blur-lg text-chinese-blue z-50 transition-all shadow-md border-b border-white/10">
@@ -35,14 +39,31 @@ export default function Navbar() {
             </Link>
           </nav>
 
-          {/* Login Button */}
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-6 py-2 rounded-full text-sm font-medium transition-all bg-chinese-blue text-white hover:bg-ceil hover:shadow-lg hidden md:inline-block"
-          >
-            Login
-          </motion.button>
+          {/* Login/User Button */}
+          {user ? (
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-chinese-blue hidden md:inline">
+                {user.email}
+              </span>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={signOut}
+                className="px-4 py-2 rounded-full text-sm font-medium transition-all bg-pearly-purple text-white hover:bg-pearly-purple/80"
+              >
+                Sign Out
+              </motion.button>
+            </div>
+          ) : (
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setShowAuthModal(true)}
+              className="px-6 py-2 rounded-full text-sm font-medium transition-all bg-chinese-blue text-white hover:bg-ceil hover:shadow-lg hidden md:inline-block"
+            >
+              Login
+            </motion.button>
+          )}
 
           {/* Mobile Menu Button */}
           <div className="md:hidden">
@@ -88,12 +109,30 @@ export default function Navbar() {
             >
               Feedback
             </Link>
-            <button className="mt-4 px-6 py-2 rounded-full text-sm font-medium bg-chinese-blue text-white hover:bg-ceil transition-colors">
-              Login
-            </button>
+            {user ? (
+              <button 
+                onClick={signOut}
+                className="mt-4 px-6 py-2 rounded-full text-sm font-medium bg-pearly-purple text-white hover:bg-pearly-purple/80 transition-colors"
+              >
+                Sign Out
+              </button>
+            ) : (
+              <button 
+                onClick={() => setShowAuthModal(true)}
+                className="mt-4 px-6 py-2 rounded-full text-sm font-medium bg-chinese-blue text-white hover:bg-ceil transition-colors"
+              >
+                Login
+              </button>
+            )}
           </div>
         </motion.div>
       )}
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+      />
     </header>
   );
 }

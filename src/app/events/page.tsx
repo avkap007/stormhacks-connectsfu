@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import EventCard from "@/components/EventCard";
 import EventModal from "@/components/EventModal";
 import FiltersDrawer from "@/components/FiltersDrawer";
-import { events, Event } from "@/lib/sampleData";
+import { Event } from "@/lib/supabase";
+import { events as sampleEvents, Event as SampleEvent } from "@/lib/sampleData";
 
 export default function EventsPage() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -13,6 +14,57 @@ export default function EventsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch events from database on component mount
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const response = await fetch('/api/events');
+        if (response.ok) {
+          const data = await response.json();
+          setEvents(data);
+        } else {
+          // Fallback to sample data if API fails
+          console.log('Using sample data as fallback');
+          // Convert sample events to database format for now
+          const convertedEvents = sampleEvents.map((event): Event => ({
+            id: event.id,
+            club_id: '11111111-1111-1111-1111-111111111111', // Default club
+            title: event.title,
+            description: event.description,
+            category: event.category,
+            campus: event.campus,
+            location_text: event.location,
+            start_at: event.date.toISOString(),
+            end_at: new Date(event.date.getTime() + 2 * 60 * 60 * 1000).toISOString(), // 2 hours later
+            poster_url: event.image,
+            created_by: '00000000-0000-0000-0000-000000000000',
+            status: 'active',
+            max_attendees: event.maxAttendees,
+            is_free: event.isFree,
+            cost: event.cost || 0,
+            tags: event.tags,
+            created_at: new Date().toISOString(),
+            clubs: {
+              name: event.club,
+              logo_url: event.clubAvatar,
+              description: `${event.club} - SFU Student Club`
+            }
+          }));
+          setEvents(convertedEvents);
+        }
+      } catch (error) {
+        console.error('Error fetching events:', error);
+        // Keep using sample data
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEvents();
+  }, []);
 
   const handleLearnMore = (event: Event) => {
     setSelectedEvent(event);
@@ -20,7 +72,7 @@ export default function EventsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-ceil/10 via-pearly-purple/5 to-dessert-sand/10 pt-20">
+    <div className="min-h-screen bg-gradient-to-br from-ceil/10 via-pearly-purple/5 to-dessert-sand/10 pt-16">
       <div className="container mx-auto px-4 py-8">
         
         {/* Top Bar */}

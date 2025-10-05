@@ -1,7 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Event } from "@/lib/sampleData";
+import { Event as SampleEvent } from "@/lib/sampleData";
+import { Event } from "@/lib/supabase";
 import { useState } from "react";
 
 interface EventCardProps {
@@ -14,7 +15,8 @@ export default function EventCard({ event, viewMode, onLearnMore }: EventCardPro
   const [isLiked, setIsLiked] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
 
-  const formatDate = (date: Date) => {
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
     return new Intl.DateTimeFormat('en-US', {
       weekday: 'short',
       month: 'short',
@@ -24,7 +26,8 @@ export default function EventCard({ event, viewMode, onLearnMore }: EventCardPro
     }).format(date);
   };
 
-  const getTimeUntil = (date: Date) => {
+  const getTimeUntil = (dateString: string) => {
+    const date = new Date(dateString);
     const now = new Date();
     const diff = date.getTime() - now.getTime();
     const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
@@ -32,7 +35,7 @@ export default function EventCard({ event, viewMode, onLearnMore }: EventCardPro
     if (days === 0) return 'Today';
     if (days === 1) return 'Tomorrow';
     if (days < 7) return `In ${days} days`;
-    return formatDate(date);
+    return formatDate(dateString);
   };
 
   if (viewMode === 'list') {
@@ -51,7 +54,7 @@ export default function EventCard({ event, viewMode, onLearnMore }: EventCardPro
                   {event.title}
                 </h3>
                 <p className="text-sm text-gray-600 mb-2">
-                  {event.club} • {formatDate(event.date)}
+                  {event.clubs?.name || 'SFU Club'} • {formatDate(event.start_at)}
                 </p>
               </div>
               
@@ -82,10 +85,10 @@ export default function EventCard({ event, viewMode, onLearnMore }: EventCardPro
 
             <div className="flex items-center gap-6 text-xs text-gray-500 mb-4">
               <span className="flex items-center gap-1">
-                📍 {event.campus} • {event.location}
+                📍 {event.campus} • {event.location_text}
               </span>
               <span className="flex items-center gap-1">
-                👥 {event.currentAttendees}/{event.maxAttendees || '∞'}
+                👥 {event.attendees || 0}/{event.max_attendees || '∞'}
               </span>
             </div>
 
@@ -128,7 +131,7 @@ export default function EventCard({ event, viewMode, onLearnMore }: EventCardPro
             {event.title}
           </h3>
           <p className="text-xs text-gray-600 mb-2">
-            {event.club}
+            {event.clubs?.name || 'SFU Club'}
           </p>
         </div>
         
@@ -157,7 +160,7 @@ export default function EventCard({ event, viewMode, onLearnMore }: EventCardPro
       <div className="space-y-2 mb-4 text-xs text-gray-600">
         <div className="flex items-center gap-2">
           <span>📅</span>
-          <span>{getTimeUntil(event.date)}</span>
+          <span>{getTimeUntil(event.start_at)}</span>
         </div>
         <div className="flex items-center gap-2">
           <span>📍</span>
@@ -165,7 +168,7 @@ export default function EventCard({ event, viewMode, onLearnMore }: EventCardPro
         </div>
         <div className="flex items-center gap-2">
           <span>👥</span>
-          <span>{event.currentAttendees} attending</span>
+          <span>{event.attendees || 0} attending</span>
         </div>
       </div>
 
