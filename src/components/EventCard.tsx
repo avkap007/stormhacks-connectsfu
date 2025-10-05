@@ -10,11 +10,10 @@ interface EventCardProps {
   onLearnMore: (event: Event) => void;
 }
 
-// Reusable blue-mist chip class
 const chipClass =
   "inline-flex items-center gap-1 px-2.5 py-1 rounded-full border text-[11px] font-medium bg-blue-mist/20 text-gray-900 border-blue-mist";
 
-export default function EventCard({ event, viewMode, onLearnMore }: EventCardProps) {
+export default function EventCard({ event, onLearnMore }: EventCardProps) {
   const [isLiked, setIsLiked] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
 
@@ -54,117 +53,37 @@ export default function EventCard({ event, viewMode, onLearnMore }: EventCardPro
     </span>
   );
 
-  if (viewMode === "list") {
-    return (
-      <motion.div
-        whileHover={{ scale: 1.01, y: -4 }}
-        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className="relative z-0 bg-white rounded-xl p-6 border border-gray-200 hover:border-gray-300 transition-transform"
-      >
-        <div className="flex gap-6">
-          <div className="flex-1">
-            <div className="flex items-start justify-between mb-3">
-              <div className="min-w-0">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2 truncate">
-                  {event.title}
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {DateChip}
-                  {ClubChip}
-                </div>
-              </div>
-              <div className="flex gap-1">
-                <button
-                  onClick={() => setIsLiked(!isLiked)}
-                  className={`p-2 rounded-lg transition-colors ${
-                    isLiked ? "text-red-500" : "text-gray-400 hover:text-red-400"
-                  }`}
-                  aria-label="Like"
-                >
-                  {isLiked ? "♥" : "♡"}
-                </button>
-                <button
-                  onClick={() => setIsSaved(!isSaved)}
-                  className={`p-2 rounded-lg transition-colors ${
-                    isSaved ? "text-yellow-500" : "text-gray-400 hover:text-yellow-400"
-                  }`}
-                  aria-label="Save"
-                >
-                  {isSaved ? "🔖" : "📑"}
-                </button>
-              </div>
-            </div>
-
-            <p className="text-gray-700 mb-4 line-clamp-2 text-sm leading-relaxed">
-              {event.description}
-            </p>
-
-            <div className="flex flex-wrap items-center gap-4 text-xs text-gray-600 mb-4">
-              <span className="flex items-center gap-1">
-                📍 {event.campus} • {event.location_text}
-              </span>
-              <span className="flex items-center gap-1">
-                👥 {event.attendees || 0}/{event.max_attendees || "∞"}
-              </span>
-            </div>
-
-            <div className="flex flex-wrap gap-2 mb-4">
-              {event.tags.map((tag) => (
-                <span key={tag} className={`${chipClass} text-[12px]`}>
-                  #{tag}
-                </span>
-              ))}
-            </div>
-
-            <button
-              onClick={() => onLearnMore(event)}
-              className="px-4 py-2 bg-black text-white rounded-lg hover:bg-neutral-900 transition-colors text-sm font-medium"
-            >
-              Learn More
-            </button>
-          </div>
-        </div>
-      </motion.div>
-    );
-  }
-
-  // Grid view
   return (
     <motion.div
       whileHover={{ scale: 1.02, y: -4 }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
-      className="relative z-0 bg-white/40 backdrop-blur-sm rounded-xl border border-gray-200/50 hover:border-gray-300/50 hover:shadow-lg transition-all duration-200 h-full flex"
+      className="relative flex flex-col bg-white border border-gray-200 hover:border-gray-300 transition-all duration-200 rounded-2xl overflow-hidden h-full"
     >
-      {/* Vertical poster */}
-      <div className="w-24 sm:w-28 md:w-32 shrink-0">
+      {/* Corner poster like Clubs page */}
+      <div className="absolute top-4 right-4 w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-xl overflow-hidden border border-gray-200">
         {event.poster_vertical_url || event.poster_url ? (
           <img
             src={event.poster_vertical_url || event.poster_url!}
             alt="Poster"
-            className="h-full w-full object-cover rounded-l-xl"
+            className="w-full h-full object-cover"
             loading="lazy"
           />
         ) : (
-          <div className="h-full min-h-40 w-full rounded-l-xl bg-gray-100 grid place-items-center text-gray-400 text-xs">
+          <div className="w-full h-full grid place-items-center text-gray-400 text-[10px]">
             poster
           </div>
         )}
       </div>
 
-      <div className="p-5 flex-1 flex flex-col">
+      {/* Content */}
+      <div className="flex flex-col flex-1 p-5 pr-24 sm:pr-28">
         {/* Header */}
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex-1 min-w-0">
-            <h3 className="text-base font-semibold text-gray-900 mb-2 line-clamp-2 leading-tight">
-              {event.title}
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              {DateChip}
-              {ClubChip}
-            </div>
-          </div>
+        <div className="flex items-start justify-between mb-3">
+          <h3 className="text-lg font-semibold text-gray-900 leading-snug mr-2">
+            {event.title}
+          </h3>
 
-          <div className="flex gap-1 ml-2">
+          <div className="flex gap-1 ml-2 shrink-0">
             <button
               onClick={() => setIsLiked(!isLiked)}
               className={`p-1.5 rounded-md transition-colors ${
@@ -186,14 +105,20 @@ export default function EventCard({ event, viewMode, onLearnMore }: EventCardPro
           </div>
         </div>
 
+        {/* Chips */}
+        <div className="flex flex-wrap gap-2 mb-4">
+          {DateChip}
+          {ClubChip}
+        </div>
+
+        {/* Meta */}
         <div className="space-y-2 mb-4 text-xs text-gray-600">
           <div className="flex items-center gap-2">
-            <span>⏱️</span>
-            <span>{getTimeUntil(event.start_at)}</span>
-          </div>
-          <div className="flex items-center gap-2">
             <span>📍</span>
-            <span>{event.campus}</span>
+            <span>
+              {event.campus}
+              {event.location_text ? ` • ${event.location_text}` : ""}
+            </span>
           </div>
           <div className="flex items-center gap-2">
             <span>👥</span>
@@ -201,29 +126,34 @@ export default function EventCard({ event, viewMode, onLearnMore }: EventCardPro
           </div>
         </div>
 
-        <p className="text-gray-700 mb-4 text-sm line-clamp-3 flex-1 leading-relaxed">
+        {/* Description */}
+        <p className="text-gray-700 mb-4 text-sm leading-relaxed line-clamp-3 flex-1">
           {event.description}
         </p>
 
-        <div className="flex flex-wrap gap-2 mb-4">
-          {event.tags.slice(0, 3).map((tag) => (
+        {/* Tags */}
+        <div className="flex flex-wrap gap-2 mb-5">
+          {(event.tags ?? []).slice(0, 4).map((tag) => (
             <span key={tag} className={`${chipClass} text-[12px]`}>
               #{tag}
             </span>
           ))}
-          {event.tags.length > 3 && (
+          {event.tags && event.tags.length > 4 && (
             <span className="px-2 py-1 rounded-md text-xs border bg-gray-50 text-gray-500 border-gray-200">
-              +{event.tags.length - 3}
+              +{event.tags.length - 4}
             </span>
           )}
         </div>
 
-        <button
-          onClick={() => onLearnMore(event)}
-          className="w-full px-4 py-2.5 bg-black text-white rounded-lg hover:bg-neutral-900 transition-colors text-sm font-medium"
-        >
-          Learn More
-        </button>
+        {/* CTA pinned to bottom */}
+        <div className="mt-auto pt-2">
+          <button
+            onClick={() => onLearnMore(event)}
+            className="w-full py-2.5 bg-black text-white rounded-lg hover:bg-neutral-900 transition-colors text-sm font-medium"
+          >
+            Learn More
+          </button>
+        </div>
       </div>
     </motion.div>
   );

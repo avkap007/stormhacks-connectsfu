@@ -10,7 +10,7 @@ export default function Navbar() {
   const { user, signOut, setShowAuthModal } = useAuth();
 
   return (
-    <header className="fixed top-0 left-0 w-full bg-white text-chinese-blue z-50">
+    <header className="fixed top-0 left-0 w-full bg-white text-chinese-blue z-[120] shadow-sm">
       {/* 3-column grid keeps nav perfectly centered */}
       <div className="grid grid-cols-3 items-center px-8 h-16 w-full">
 
@@ -85,30 +85,54 @@ export default function Navbar() {
               onClick={() => setIsOpen(!isOpen)}
               className="flex flex-col space-y-1.5 p-2 focus:outline-none"
             >
-              <div className={`h-[3px] w-8 bg-chinese-blue transition-all duration-300 ${isOpen ? "rotate-45 translate-y-2" : ""}`}></div>
-              <div className={`h-[3px] w-8 bg-chinese-blue transition-all duration-300 ${isOpen ? "opacity-0" : ""}`}></div>
-              <div className={`h-[3px] w-8 bg-chinese-blue transition-all duration-300 ${isOpen ? "-rotate-45 -translate-y-2" : ""}`}></div>
+              <div
+                className={`h-[3px] w-8 bg-chinese-blue transition-all duration-300 ${
+                  isOpen ? "rotate-45 translate-y-2" : ""
+                }`}
+              ></div>
+              <div
+                className={`h-[3px] w-8 bg-chinese-blue transition-all duration-300 ${
+                  isOpen ? "opacity-0" : ""
+                }`}
+              ></div>
+              <div
+                className={`h-[3px] w-8 bg-chinese-blue transition-all duration-300 ${
+                  isOpen ? "-rotate-45 -translate-y-2" : ""
+                }`}
+              ></div>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu — ensure it’s above all content */}
       {isOpen && (
         <motion.div
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: -20, opacity: 0 }}
-          className="absolute top-full w-full bg-white p-6 md:hidden border-b border-gray-200"
+          className="absolute top-full w-full bg-white p-6 md:hidden border-b border-gray-200 z-[130] shadow-lg"
         >
           <div className="flex flex-col space-y-4 text-center">
-            <Link href="/" onClick={() => setIsOpen(false)} className="text-lg font-normal text-chinese-blue hover:text-ceil transition-colors">
+            <Link
+              href="/"
+              onClick={() => setIsOpen(false)}
+              className="text-lg font-normal text-chinese-blue hover:text-ceil transition-colors"
+            >
               home
             </Link>
-            <Link href="/clubs" onClick={() => setIsOpen(false)} className="text-lg font-normal text-chinese-blue hover:text-ceil transition-colors">
+            <Link
+              href="/clubs"
+              onClick={() => setIsOpen(false)}
+              className="text-lg font-normal text-chinese-blue hover:text-ceil transition-colors"
+            >
               clubs
             </Link>
-            <Link href="/events" onClick={() => setIsOpen(false)} className="text-lg font-normal text-chinese-blue hover:text-ceil transition-colors">
+            <Link
+              href="/events"
+              onClick={() => setIsOpen(false)}
+              className="text-lg font-normal text-chinese-blue hover:text-ceil transition-colors"
+            >
               events
             </Link>
 
@@ -129,7 +153,10 @@ export default function Navbar() {
                 </button>
               </div>
             ) : (
-              <button onClick={() => setShowAuthModal(true)} className="mt-4 px-6 py-2 rounded-full text-sm font-medium bg-chinese-blue text-white hover:bg-ceil transition-colors">
+              <button
+                onClick={() => setShowAuthModal(true)}
+                className="mt-4 px-6 py-2 rounded-full text-sm font-medium bg-chinese-blue text-white hover:bg-ceil transition-colors"
+              >
                 login
               </button>
             )}
