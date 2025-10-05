@@ -1,4 +1,3 @@
-// components/TrendingCategories.tsx
 "use client";
 
 import * as React from "react";
@@ -7,7 +6,6 @@ export type Category = {
   id: string;
   label: string;
   href?: string;
-  /** Public path like "/assets/triangle-heart.gif" or an imported asset { src } */
   gif?: string | { src: string };
   emoji?: string;
 };
@@ -71,6 +69,8 @@ export default function TrendingCategories({
                 ${color} ${spans}
                 border border-white/60
                 flex flex-col
+                transform transition-transform duration-300 ease-out
+                hover:scale-[1.04] hover:shadow-lg hover:z-10
               `}
             >
               {/* decorative blob */}
@@ -121,7 +121,6 @@ function CardContent({
   gifSrc?: string;
   id?: string;
 }) {
-  // 🔸 Make "closeknit" GIF larger
   const isLargeGif = id === "closeknit";
 
   return (
@@ -150,8 +149,8 @@ function CardContent({
               transition-transform duration-500
               group-hover:scale-110 group-hover:animate-bounce-slow
               ${isLargeGif
-                ? "h-40 sm:h-48 md:h-56" // Larger for Close Knit
-                : "h-24 sm:h-28 md:h-32"} // Default
+                ? "h-40 sm:h-48 md:h-56"
+                : "h-24 sm:h-28 md:h-32"}
             `}
           />
         </div>

@@ -33,13 +33,31 @@ export default function Home() {
     <>
       <Navbar />
       <main className="bg-white">
+        <div className="absolute inset-0 pattern-dots pattern-blue-500 pattern-bg-grey pattern-size-6 pattern-opacity-20 z-0" />
         {/* Hero (screen 1) */}
         <section className="snap-start min-h-[100svh] flex items-center">
           <div className="mx-auto w-full max-w-screen-xl px-6 sm:px-10 lg:px-16 py-16 sm:py-20">
+            <h1 className="text-5xl sm:text-6xl font-bold text-chinese-blue flex flex-wrap items-center justify-center text-center leading-tight">
+              Explore clubs
+              <img
+                src="/assets/star_landingpage.gif"
+                alt="plan"
+                className="inline-block w-20 h-20 sm:w-24 sm:h-24 object-contain align-middle"
+              />
+              Find new friends
+              <img
+                src="/assets/blob_landingpage.gif"
+                alt="step"
+                className="inline-block w-20 h-20 sm:w-24 sm:h-24 object-contain align-middle"
+              />
+              Make SFU more than classes
+              <img
+                src="/assets/note_landingpage.gif"
+                alt="done"
+                className="inline-block w-20 h-20 sm:w-24 sm:h-24 object-contain align-middle"
+              />
+            </h1>
             <div className="text-center max-w-3xl mx-auto">
-              <h1 className="text-5xl sm:text-6xl font-bold text-chinese-blue mb-6">
-                Explore clubs Find new friends Make SFU more then classes
-              </h1>
               <p className="text-lg sm:text-xl text-gray-600 mb-12">
                 Find events, make friends, and discover your SFU community! Never go to an event alone again.
               </p>
@@ -57,6 +75,31 @@ export default function Home() {
                   </button>
                 </div>
               </div>
+            </div>
+            {/* image */}
+            <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Left image */}
+              <div className="relative w-full overflow-hidden rounded-2xl">
+                <img
+                  src="/assets/mascot_blue.gif"   
+                  alt="Students collaborating"
+                  className="block w-64 h-64 sm:h-72 md:h-80 object-cover"
+                  loading="lazy"
+                />
+              </div>
+
+              {/* Right image */}
+              <div className="flex justify-end mt-6">
+                <div className="relative overflow-hidden rounded-2xl">
+                  <img
+                    src="/assets/mascot_orange.gif"
+                    alt="Campus life"
+                    className="block w-64 h-64 sm:h-72 md:h-80 object-cover rounded-2xl"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+
             </div>
           </div>
         </section>
