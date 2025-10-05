@@ -121,27 +121,24 @@ export default function Home() {
               <img
                 src="/assets/blue_animated.gif"
                 alt="Blue mascot"
-                className="absolute left-0 bottom-0 w-64 h-64 sm:w-72 sm:h-80 object-contain translate-y-40"
+                className="absolute left-0 bottom-0 w-64 h-64 sm:w-72 sm:h-80 object-contain translate-y-30"
               />
               <img
                 src="/assets/orange_animated.gif"
                 alt="Orange mascot"
-                className="absolute right-0 bottom-0 w-64 h-64 sm:w-72 sm:h-80 object-contain translate-y-40"
+                className="absolute right-0 bottom-0 w-64 h-64 sm:w-72 sm:h-80 object-contain translate-y-30"
               />
 
               {/* Text content */}
-              <div className="flex flex-col items-center text-center z-10 relative max-w-4xl mx-auto px-4 sm:px-6">
-    <h1 className="text-5xl sm:text-6xl font-bold text-chinese-blue lowercase leading-tight">
+              <div className="flex flex-col items-center text-center z-10 relative max-w-4xl mx-auto px-4 sm:px-6 -mt-20">
+                <h1 className="text-4xl sm:text-6xl font-bold text-chinese-blue lowercase leading-tight">
                   welcome to connectsfu
                 </h1>
-
+                <p className="text-lg sm:text-xl text-gray-600 max-w-xl mx-auto mb-20">
+                  Find events, make friends, and discover your SFU community! Never go to an event alone again.
+                </p>
               </div>
-            </div>
-            <div className="text-center max-w-2xl mx-auto">
-              {/* Subtitle */}
-              <p className="text-lg sm:text-xl text-gray-600 mb-10">
-                Find events, make friends, and discover your SFU community! Never go to an event alone again.
-              </p>
+
 
               {/* Search Input with Gemini */}
               <form onSubmit={handleSearch} className="w-full max-w-2xl mx-auto mb-12 relative z-10">
@@ -169,10 +166,13 @@ export default function Home() {
                     {searchLoading ? 'Searching...' : 'Search'}
                   </button>
                 </div>
-                <p className="text-sm text-gray-500 mt-3">
-                  Powered by AI - search naturally like you're talking to a friend
-                </p>
+                <div className="text-center w-full mt-1">
+                  <p className="text-sm text-gray-500">
+                    Powered by AI - search naturally like you're talking to a friend
+                  </p>
+                </div>
               </form>
+
             </div>
           </div>
         </section>
