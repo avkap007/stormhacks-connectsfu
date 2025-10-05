@@ -27,22 +27,22 @@ function categorizeClub(description: string): string[] {
   const categories: string[] = [];
   const desc = description.toLowerCase();
   
-  if (desc.match(/culture|cultural|heritage|tradition/i)) {
+  if (desc.match(/\b(culture|cultural|heritage|tradition)\b/i)) {
     categories.push("Cultural");
   }
-  if (desc.match(/tech|programming|software|coding|developer/i)) {
+  if (desc.match(/\b(tech|programming|software|coding|developer|technology)\b/i)) {
     categories.push("Technology");
   }
-  if (desc.match(/business|career|professional|entrepreneur/i)) {
+  if (desc.match(/\b(business|career|professional|entrepreneur)\b/i)) {
     categories.push("Business & Professional");
   }
-  if (desc.match(/music|dance|art|performance/i)) {
+  if (desc.match(/\b(music|dance|art|performance)\b/i)) {
     categories.push("Arts & Performance");
   }
-  if (desc.match(/sport|athletic|hiking|outdoor/i)) {
+  if (desc.match(/\b(sport|athletic|hiking|outdoor)\b/i)) {
     categories.push("Sports & Recreation");
   }
-  if (desc.match(/gaming|esport|game/i)) {
+  if (desc.match(/\b(gaming|esport|game)\b/i)) {
     categories.push("Gaming");
   }
   
