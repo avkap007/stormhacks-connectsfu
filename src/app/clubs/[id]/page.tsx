@@ -4,6 +4,8 @@ import Navbar from "@/components/Navbar";
 import { useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { Download } from 'lucide-react';
+import { clubEventsData } from "../data";
 
 type ClubRaw = {
   name: string;
@@ -69,11 +71,34 @@ export default function ClubDetailPage() {
   const clubId = params?.id as string;
   const club = clubsData.find((c: Club) => c.id === clubId);
 
+  // Get club-specific events from the data file
+const clubEvents = clubEventsData[clubId] || { upcoming: [], past: [] };
+const [upcomingEvents] = useState(clubEvents.upcoming);
+const [pastEvents] = useState(clubEvents.past);
+
+  // downloadAttendees function inside component
+ const downloadAttendees = (event: any) => {
+  const csvContent = [
+    ['Name', 'Email', 'Attended'],
+    ...event.attendees.map((a: any) => [a.name, a.email, a.attended ? 'Yes' : 'No'])
+  ].map(row => row.join(',')).join('\n');
+  
+  const blob = new Blob([csvContent], { type: 'text/csv' });
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${event.title.replace(/\s+/g, '_')}_attendees.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  window.URL.revokeObjectURL(url);
+};
+
   if (!club) {
     return (
       <>
         <Navbar />
-        <main className="min-h-screen bg-gradient-to-br from-ceil/10 via-pearly-purple/5 to-dessert-sand/10 pt-16">
+        <main className="min-h-screen bg-[#EADCF8] pt-16">
           <div className="container mx-auto px-4 py-12">
             <div className="text-center">
               <h1 className="text-4xl font-bold text-chinese-blue mb-4">Club Not Found</h1>
@@ -118,7 +143,6 @@ export default function ClubDetailPage() {
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  <div className="absolute -bottom-2 -right-2 w-12 h-12 bg-gradient-to-br from-ceil to-chinese-blue rounded-full blur-xl opacity-50" />
                 </div>
 
                 {/* Club Info */}
@@ -131,7 +155,7 @@ export default function ClubDetailPage() {
                     {club.categories.map((category: string) => (
                       <span 
                         key={category} 
-                        className="px-4 py-2 bg-gradient-to-r from-ceil/30 to-chinese-blue/30 text-chinese-blue text-sm rounded-full font-semibold backdrop-blur-sm border border-ceil/30"
+                        className="px-4 py-2 bg-pastel-lavender text-chinese-blue text-sm rounded-full font-semibold border border-gray-200"
                       >
                         {category}
                       </span>
@@ -148,7 +172,7 @@ export default function ClubDetailPage() {
                     className={`relative px-8 py-4 rounded-xl font-bold text-lg overflow-hidden transition-all duration-300 ${
                       isSubscribed
                         ? 'bg-gradient-to-r from-green-500 to-green-600 text-white'
-                        : 'bg-gradient-to-r from-chinese-blue to-ceil text-white'
+                        : 'bg-pearly-purple text-white hover:bg-opacity-90'
                     }`}
                   >
                     <span className="relative z-10 flex items-center gap-2">
@@ -183,8 +207,8 @@ export default function ClubDetailPage() {
             {/* Contact Details */}
             <div className="bg-gradient-to-br from-white/40 via-white/30 to-white/20 backdrop-blur-lg rounded-3xl border border-white/40 p-8 shadow-sm">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 bg-gradient-to-br from-chinese-blue to-ceil rounded-xl flex items-center justify-center">
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="w-12 h-12 bg-[#EADCF8] rounded-xl flex items-center justify-center">
+                    <svg className="w-6 h-6 text-[#C084FC]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                   </svg>
                 </div>
@@ -225,8 +249,8 @@ export default function ClubDetailPage() {
             {/* Website */}
             <div className="bg-gradient-to-br from-white/40 via-white/30 to-white/20 backdrop-blur-lg rounded-3xl border border-white/40 p-8 shadow-sm">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 bg-gradient-to-br from-chinese-blue to-ceil rounded-xl flex items-center justify-center">
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="w-12 h-12 bg-[#EADCF8] rounded-xl flex items-center justify-center">
+                        <svg className="w-6 h-6 text-[#C084FC]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
                   </svg>
                 </div>
@@ -268,30 +292,171 @@ export default function ClubDetailPage() {
             </div>
           </div>
 
-          {/* Upcoming Events Placeholder */}
-          <div className="bg-gradient-to-br from-white/40 via-white/30 to-white/20 backdrop-blur-lg rounded-3xl border border-white/40 p-8 shadow-sm">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 bg-gradient-to-br from-chinese-blue to-ceil rounded-xl flex items-center justify-center">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-              </div>
-              <h2 className="text-2xl font-bold text-chinese-blue">Upcoming Events</h2>
+        {/* Upcoming Events Section */}
+        <div className="bg-gradient-to-br from-white/40 via-white/30 to-white/20 backdrop-blur-lg rounded-3xl border border-white/40 p-8 shadow-sm mb-8">
+        <div className="flex items-center gap-3 mb-6">
+            <div className="w-12 h-12 bg-[#EADCF8] rounded-xl flex items-center justify-center">
+            <svg className="w-6 h-6 text-[#C084FC]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
             </div>
-
-            <div className="text-center py-12">
-              <div className="w-20 h-20 bg-ceil/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-10 h-10 text-ceil" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <p className="text-gray-500 text-lg font-medium">No upcoming events at this time</p>
-              <p className="text-gray-400 text-sm mt-2">Check back soon for new events!</p>
-            </div>
-          </div>
-
+            <h2 className="text-2xl font-bold text-chinese-blue">Upcoming Events</h2>
         </div>
-      </main>
+
+        {upcomingEvents.length === 0 ? (
+            <div className="text-center py-12">
+            <div className="w-20 h-20 bg-ceil/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-10 h-10 text-ceil" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+            <p className="text-gray-500 text-lg font-medium">No upcoming events at this time</p>
+            <p className="text-gray-400 text-sm mt-2">Check back soon for new events!</p>
+            </div>
+        ) : (
+            <div className="max-w-4xl mx-auto space-y-6">
+            {upcomingEvents.map((event, index) => (
+                <div
+                key={event.id}
+                className="bg-white/50 backdrop-blur-sm rounded-2xl border border-white/60 p-8 hover:shadow-md transition-shadow"
+                >
+                <div className="flex gap-8 items-start">
+                    {/* Event Details - Left Side */}
+                    <div className="flex-1">
+                    <h3 className="text-2xl font-bold text-chinese-blue mb-4">{event.title}</h3>
+                    
+                    <div className="space-y-2 text-base text-gray-600 mb-5">
+                        <div className="flex items-center gap-3">
+                        <svg className="w-5 h-5 text-[#C084FC]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <span className="font-medium">{event.date}</span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                        <svg className="w-5 h-5 text-[#C084FC]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span className="font-medium">{event.time}</span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                        <svg className="w-5 h-5 text-[#C084FC]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <span className="font-medium">{event.location}</span>
+                        </div>
+                    </div>
+                    
+                    <p className="text-gray-700 text-base mb-5 leading-relaxed">{event.description}</p>
+                    
+                    <div>
+                        <div className="flex justify-between text-sm text-gray-600 mb-2">
+                        <span className="flex items-center gap-2 font-medium">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                            {event.rsvps}/{event.capacity} RSVPs
+                        </span>
+                        <span className="font-semibold">{Math.round((event.rsvps / event.capacity) * 100)}% filled</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-3">
+                        <div
+                            className="bg-gradient-to-r from-[#C084FC] to-[#E879F9] h-3 rounded-full transition-all"
+                            style={{ width: `${Math.min((event.rsvps / event.capacity) * 100, 100)}%` }}
+                        />
+                        </div>
+                    </div>
+                    </div>
+
+                    {/* Event Poster - Right Side */}
+                    <div className="w-56 h-72 flex-shrink-0">
+                    <a 
+                        href={pastEvents[index % pastEvents.length]?.poster || "/assets/gdsc_clubs_day.png"}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block w-full h-full cursor-pointer"
+                    >
+                        <img 
+                        src={pastEvents[index % pastEvents.length]?.poster || "/assets/gdsc_clubs_day.png"}
+                        alt={event.title}
+                        className="w-full h-full object-cover rounded-xl shadow-md hover:opacity-90 transition-opacity"
+                        />
+                    </a>
+                    </div>
+                </div>
+                </div>
+            ))}
+            </div>
+        )}
+        </div>
+        
+        {/* Past Events Section */}
+        <div className="bg-gradient-to-br from-white/40 via-white/30 to-white/20 backdrop-blur-lg rounded-3xl border border-white/40 p-8 shadow-sm">
+        <div className="flex items-center gap-3 mb-6">
+            <div className="w-12 h-12 bg-[#EADCF8] rounded-xl flex items-center justify-center">
+            <svg className="w-6 h-6 text-[#C084FC]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            </div>
+            <h2 className="text-2xl font-bold text-chinese-blue">Past Events</h2>
+        </div>
+
+        {pastEvents.length === 0 ? (
+            <div className="text-center py-12">
+            <p className="text-gray-500">No past events</p>
+            </div>
+        ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {pastEvents.map(event => (
+                <div
+                key={event.id}
+                className="group bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-lg transition-all"
+                >
+                <div className="relative h-64 overflow-hidden bg-gray-100">
+                    <a 
+                    href={event.poster}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="absolute inset-0 z-10"
+                    >
+                    <img 
+                        src={event.poster} 
+                        alt={event.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    </a>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
+                    <div className="absolute bottom-0 left-0 right-0 p-4 text-white pointer-events-none">
+                    <h3 className="text-lg font-bold mb-1">{event.title}</h3>
+                    <p className="text-sm text-white/90">{event.date}</p>
+                    </div>
+                </div>
+                
+                <div className="p-4">
+                    <div className="flex items-center gap-2 text-gray-600 mb-3">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    <span className="text-sm font-medium">
+                        {event.attendees.length} sign ups, {event.attendees.filter((a: any) => a.attended).length} attended
+                    </span>
+                    </div>
+                    
+                    <button
+                    onClick={() => downloadAttendees(event)}
+                    className="w-full flex items-center justify-center gap-2 bg-chinese-blue hover:bg-ceil text-white px-4 py-2 rounded-full transition-all font-medium text-sm"
+                    >
+                    <Download size={16} />
+                    Download Attendees
+                    </button>
+                </div>
+                </div>
+            ))}
+            </div>
+        )}
+        </div>
+        </div>
+    </main>
     </>
-  );
+);
 }
