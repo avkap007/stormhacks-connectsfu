@@ -30,13 +30,32 @@ export async function POST(request: Request) {
       );
     }
 
-    // For now, let's just store the RSVP directly without user authentication
-    // We'll use a simple approach for the demo
+    // Get the authorization header
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json(
+        { error: 'Authentication required to RSVP' },
+        { status: 401 }
+      );
+    }
+
+    // Extract the token and verify the user
+    const token = authHeader.split(' ')[1];
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    
+    if (authError || !user) {
+      return NextResponse.json(
+        { error: 'Invalid authentication token' },
+        { status: 401 }
+      );
+    }
+
+    // Use the authenticated user's ID
     const { data: rsvp, error } = await supabase
       .from('rsvps')
       .insert({
         event_id: eventId,
-        user_id: '00000000-0000-0000-0000-000000000000', // Placeholder for demo
+        user_id: user.id, // Use real user ID
         name,
         email,
         phone,
@@ -59,9 +78,49 @@ export async function POST(request: Request) {
       );
     }
 
+    // Send confirmation email using the existing send-email API
+    try {
+      const emailResponse = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3001'}/api/send-email`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          to: email,
+          subject: `RSVP Confirmed: ${event.title}`,
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+              <h2 style="color: #1e40af;">🎉 RSVP Confirmed!</h2>
+              <p>Hi ${name},</p>
+              <p>Your RSVP for <strong>${event.title}</strong> has been confirmed!</p>
+              
+              <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                <h3 style="margin-top: 0;">Event Details</h3>
+                <p><strong>Event:</strong> ${event.title}</p>
+                <p><strong>Date:</strong> ${new Date(event.start_at).toLocaleString()}</p>
+                <p><strong>Location:</strong> ${event.location_text}, ${event.campus}</p>
+                <p><strong>Status:</strong> ${status}</p>
+                ${findBuddy ? '<p><strong>Buddy Request:</strong> ✅ You\'re looking for a buddy!</p>' : ''}
+              </div>
+              
+              <p>We'll send you reminders before the event. See you there!</p>
+              
+              <p>Best regards,<br>ConnectSFU Team</p>
+            </div>
+          `
+        })
+      });
+
+      if (!emailResponse.ok) {
+        console.error('Failed to send confirmation email');
+      }
+    } catch (emailError) {
+      console.error('Email sending error:', emailError);
+    }
+
     return NextResponse.json({
       success: true,
-      message: 'RSVP submitted successfully! Check your profile for confirmation.',
+      message: 'RSVP submitted successfully! Check your email for confirmation.',
       rsvp
     });
   } catch (error) {
