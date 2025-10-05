@@ -1,4 +1,3 @@
-// components/TrendingCategories.tsx
 "use client";
 
 import * as React from "react";
@@ -7,7 +6,6 @@ export type Category = {
   id: string;
   label: string;
   href?: string;
-  /** Public path like "/assets/triangle-heart.gif" or an imported asset { src } */
   gif?: string | { src: string };
   emoji?: string;
 };
@@ -31,7 +29,6 @@ export default function TrendingCategories({
     "bg-amber-100",
     "bg-pink-100",
     "bg-blue-100",
-    
   ];
 
   const spanByIndex = [
@@ -72,6 +69,8 @@ export default function TrendingCategories({
                 ${color} ${spans}
                 border border-white/60
                 flex flex-col
+                transform transition-transform duration-300 ease-out
+                hover:scale-[1.04] hover:shadow-lg hover:z-10
               `}
             >
               {/* decorative blob */}
@@ -84,7 +83,6 @@ export default function TrendingCategories({
                                 "bg-amber-200/40",
                                 "bg-pink-200/40",
                                 "bg-blue-200/40",
-                                
                               ][i % 5]
                             }
                             blur-xl z-0`}
@@ -95,6 +93,7 @@ export default function TrendingCategories({
                 label={cat.label}
                 emoji={cat.emoji}
                 gifSrc={gifSrc}
+                id={cat.id}
               />
             </a>
           );
@@ -115,11 +114,15 @@ function CardContent({
   label,
   emoji,
   gifSrc,
+  id,
 }: {
   label: string;
   emoji?: string;
   gifSrc?: string;
+  id?: string;
 }) {
+  const isLargeGif = id === "closeknit";
+
   return (
     <div className="relative z-20 flex flex-col items-start justify-between flex-1 p-5 sm:p-6 lg:p-7 text-left">
       {/* Top: Title */}
@@ -134,19 +137,21 @@ function CardContent({
         </h3>
       </div>
 
-      {/* Middle: Centered GIF (animated on hover) */}
+      {/* Middle: Centered GIF */}
       {gifSrc && (
         <div className="flex-1 flex w-full items-center justify-center mb-4">
           <img
             src={gifSrc}
             alt=""
             aria-hidden="true"
-            className="
-              pointer-events-none select-none h-24 sm:h-28 md:h-32 w-auto
-              object-contain opacity-90
+            className={`
+              pointer-events-none select-none w-auto object-contain opacity-90
               transition-transform duration-500
-              group-hover:scale-120 group-hover:animate-bounce-slow
-            "
+              group-hover:scale-110 group-hover:animate-bounce-slow
+              ${isLargeGif
+                ? "h-40 sm:h-48 md:h-56"
+                : "h-24 sm:h-28 md:h-32"}
+            `}
           />
         </div>
       )}
@@ -175,4 +180,3 @@ function CardContent({
     </div>
   );
 }
-

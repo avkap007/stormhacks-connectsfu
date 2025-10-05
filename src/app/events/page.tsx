@@ -1,14 +1,17 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import EventCard from "@/components/EventCard";
 import EventModal from "@/components/EventModal";
 import FiltersDrawer from "@/components/FiltersDrawer";
 import { Event } from "@/lib/supabase";
 import { events as sampleEvents, Event as SampleEvent } from "@/lib/sampleData";
+import { parseNaturalLanguageQuery} from "@/lib/geminiSearch";
 
 export default function EventsPage() {
+  const searchParams = useSearchParams();
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showFilters, setShowFilters] = useState(false);
   const [sortBy, setSortBy] = useState<'soonest' | 'popular' | 'newest'>('soonest');
@@ -17,6 +20,7 @@ export default function EventsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchLoading, setSearchLoading] = useState(false);
   
   // Filter states
   const [selectedCampuses, setSelectedCampuses] = useState<string[]>([]);
@@ -36,6 +40,28 @@ export default function EventsPage() {
     setSelectedDate('');
   };
 
+  // Natural language search with Gemini
+  const handleNaturalSearch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!searchQuery.trim()) return;
+
+    setSearchLoading(true);
+    try {
+      const filters = await parseNaturalLanguageQuery(searchQuery);
+      
+      // Apply the filters extracted by Gemini
+      if (filters.categories) setSelectedCategories(filters.categories);
+      if (filters.campuses) setSelectedCampuses(filters.campuses);
+      if (filters.dateRange) setSelectedDate(filters.dateRange);
+      
+    } catch (error) {
+      console.error('Error with natural language search:', error);
+    } finally {
+      setSearchLoading(false);
+    }
+  };
+
   // Fetch events from database on component mount
   useEffect(() => {
     const fetchEvents = async () => {
@@ -45,9 +71,7 @@ export default function EventsPage() {
           const data = await response.json();
           setEvents(data);
         } else {
-          // Fallback to sample data if API fails
           console.log('Using sample data as fallback');
-          // Convert sample events to database format
           const convertedEvents = sampleEvents.map((event): Event => ({
             id: event.id,
             club_id: '11111111-1111-1111-1111-111111111111',
@@ -76,7 +100,6 @@ export default function EventsPage() {
         }
       } catch (error) {
         console.error('Error fetching events:', error);
-        // Fallback to sample data on error
         const convertedEvents = sampleEvents.map((event): Event => ({
           id: event.id,
           club_id: '11111111-1111-1111-1111-111111111111',
@@ -110,6 +133,30 @@ export default function EventsPage() {
     fetchEvents();
   }, []);
 
+  // Apply URL parameters - runs when URL changes
+  useEffect(() => {
+    const categories = searchParams.get('categories');
+    if (categories) {
+      setSelectedCategories(categories.split(','));
+      console.log('Setting categories from URL:', categories.split(','));
+    }
+    
+    const campuses = searchParams.get('campuses');
+    if (campuses) {
+      setSelectedCampuses(campuses.split(','));
+    }
+    
+    const date = searchParams.get('date');
+    if (date) {
+      setSelectedDate(date);
+    }
+    
+    const query = searchParams.get('q');
+    if (query) {
+      setSearchQuery(query);
+    }
+  }, [searchParams]);
+
   const handleLearnMore = (event: Event) => {
     setSelectedEvent(event);
     setIsModalOpen(true);
@@ -117,8 +164,7 @@ export default function EventsPage() {
 
   // Filter events based on search query and active filters
   const filteredEvents = events.filter(event => {
-    // Search filter
-    if (searchQuery) {
+    if (searchQuery && selectedCategories.length === 0 && selectedCampuses.length === 0 && !selectedDate) {
       const query = searchQuery.toLowerCase();
       const matchesSearch = 
         event.title.toLowerCase().includes(query) ||
@@ -129,41 +175,48 @@ export default function EventsPage() {
       if (!matchesSearch) return false;
     }
 
-    // Campus filter
     if (selectedCampuses.length > 0) {
       if (!selectedCampuses.includes(event.campus || '')) return false;
     }
 
-    // Category filter
     if (selectedCategories.length > 0) {
       if (!selectedCategories.includes(event.category || '')) return false;
     }
 
-    // Date filter (basic implementation)
     if (selectedDate && selectedDate !== 'All dates') {
       const eventDate = new Date(event.start_at);
       const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
       const tomorrow = new Date(today);
       tomorrow.setDate(tomorrow.getDate() + 1);
 
       switch (selectedDate) {
         case 'Today':
-          if (eventDate.toDateString() !== today.toDateString()) return false;
+          const eventDay = new Date(eventDate);
+          eventDay.setHours(0, 0, 0, 0);
+          if (eventDay.getTime() !== today.getTime()) return false;
           break;
         case 'Tomorrow':
-          if (eventDate.toDateString() !== tomorrow.toDateString()) return false;
+          const eventTomorrow = new Date(eventDate);
+          eventTomorrow.setHours(0, 0, 0, 0);
+          if (eventTomorrow.getTime() !== tomorrow.getTime()) return false;
           break;
         case 'This weekend':
           const dayOfWeek = eventDate.getDay();
-          if (dayOfWeek !== 0 && dayOfWeek !== 6) return false;
+          const daysUntilWeekend = eventDate.getTime() - today.getTime();
+          const inNextWeek = daysUntilWeekend < 7 * 24 * 60 * 60 * 1000;
+          if ((dayOfWeek !== 0 && dayOfWeek !== 6) || !inNextWeek) return false;
           break;
         case 'Next week':
-          const nextWeek = new Date(today);
-          nextWeek.setDate(nextWeek.getDate() + 7);
-          if (eventDate > nextWeek) return false;
+          const nextWeekStart = new Date(today);
+          nextWeekStart.setDate(nextWeekStart.getDate() + 1);
+          const nextWeekEnd = new Date(today);
+          nextWeekEnd.setDate(nextWeekEnd.getDate() + 7);
+          if (eventDate < nextWeekStart || eventDate > nextWeekEnd) return false;
           break;
         case 'This month':
-          if (eventDate.getMonth() !== today.getMonth()) return false;
+          if (eventDate.getMonth() !== today.getMonth() || eventDate.getFullYear() !== today.getFullYear()) return false;
           break;
       }
     }
@@ -194,23 +247,29 @@ export default function EventsPage() {
             
             {/* Search Box */}
             <div className="flex-1 max-w-md">
-              <div className="relative">
+              <form onSubmit={handleNaturalSearch} className="relative">
                 <input
                   type="text"
-                  placeholder="Search events..."
+                  placeholder="Try: 'tech events next week' or 'business networking in Burnaby'"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 rounded-lg bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-chinese-blue/50 text-gray-900 placeholder-gray-500"
+                  className="w-full pl-10 pr-20 py-3 rounded-lg bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-chinese-blue/50 text-gray-900 placeholder-gray-500"
                 />
                 <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
                   🔍
                 </div>
-              </div>
+                <button
+                  type="submit"
+                  disabled={searchLoading}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 px-3 py-1.5 bg-chinese-blue text-white rounded-md text-sm font-medium hover:bg-ceil transition-colors disabled:opacity-50"
+                >
+                  {searchLoading ? '...' : 'Search'}
+                </button>
+              </form>
             </div>
 
             {/* Filters & View Toggle */}
             <div className="flex items-center gap-4">
-              {/* Filters Button */}
               <button
                 onClick={() => setShowFilters(!showFilters)}
                 className="px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors font-medium flex items-center gap-2"
@@ -219,7 +278,6 @@ export default function EventsPage() {
                 Filters
               </button>
 
-              {/* Sort Dropdown */}
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as any)}
@@ -230,7 +288,6 @@ export default function EventsPage() {
                 <option value="newest">Newest</option>
               </select>
 
-              {/* View Toggle */}
               <div className="flex bg-gray-100 rounded-lg p-1">
                 <button
                   onClick={() => setViewMode('grid')}
@@ -261,7 +318,6 @@ export default function EventsPage() {
             <div className="flex flex-wrap gap-2 items-center pt-4 border-t border-gray-200/50">
               <span className="text-sm font-medium text-gray-700">Active:</span>
               
-              {/* Campus filters */}
               {selectedCampuses.map(campus => (
                 <div key={campus} className="flex items-center gap-2 px-3 py-1.5 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
                   <span>{campus}</span>
@@ -274,7 +330,6 @@ export default function EventsPage() {
                 </div>
               ))}
               
-              {/* Category filters */}
               {selectedCategories.map(category => (
                 <div key={category} className="flex items-center gap-2 px-3 py-1.5 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">
                   <span>{category}</span>
@@ -287,7 +342,6 @@ export default function EventsPage() {
                 </div>
               ))}
               
-              {/* Date filter */}
               {selectedDate && (
                 <div className="flex items-center gap-2 px-3 py-1.5 bg-green-100 text-green-800 rounded-full text-sm font-medium">
                   <span>{selectedDate}</span>
@@ -303,7 +357,6 @@ export default function EventsPage() {
           )}
         </div>
 
-        {/* Filters Drawer */}
         {showFilters && (
           <FiltersDrawer 
             onClose={() => setShowFilters(false)}
@@ -315,7 +368,6 @@ export default function EventsPage() {
           />
         )}
 
-        {/* Events Grid/List */}
         {filteredEvents.length > 0 ? (
           <div className={`${
             viewMode === 'grid' 
@@ -340,7 +392,6 @@ export default function EventsPage() {
           </div>
         )}
 
-        {/* Load More Button */}
         {filteredEvents.length > 0 && (
           <div className="text-center mt-12">
             <button className="px-8 py-4 rounded-xl bg-gradient-to-r from-chinese-blue to-ceil text-white hover:shadow-lg transition-all duration-200 font-medium">
@@ -350,7 +401,6 @@ export default function EventsPage() {
         )}
       </div>
 
-      {/* Event Modal */}
       <EventModal
         event={selectedEvent}
         isOpen={isModalOpen}
