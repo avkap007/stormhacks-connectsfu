@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Navbar from "@/components/Navbar";
 import EventCard from "@/components/EventCard";
 import EventModal from "@/components/EventModal";
 import FiltersDrawer from "@/components/FiltersDrawer";
@@ -172,15 +173,20 @@ export default function EventsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-ceil/10 via-pearly-purple/5 to-dessert-sand/10 pt-16 flex items-center justify-center">
-        <div className="text-xl text-gray-600">Loading events...</div>
+      <div className="min-h-screen bg-gradient-to-br from-ceil/10 via-pearly-purple/5 to-dessert-sand/10">
+        <Navbar />
+        <div className="pt-24 flex items-center justify-center">
+          <div className="text-xl text-gray-600">Loading events...</div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-ceil/10 via-pearly-purple/5 to-dessert-sand/10 pt-16">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-ceil/10 via-pearly-purple/5 to-dessert-sand/10">
+      <Navbar />
+      
+      <div className="container mx-auto px-4 py-8 pt-24">
         
         {/* Top Bar */}
         <div className="bg-white/40 backdrop-blur-sm rounded-xl p-6 mb-8 border border-gray-200/50 shadow-sm">
