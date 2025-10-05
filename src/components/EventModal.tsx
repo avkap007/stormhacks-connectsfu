@@ -206,23 +206,7 @@ export default function EventModal({ event, isOpen, onClose }: EventModalProps) 
             className="relative bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[85vh] overflow-hidden flex flex-col"
           >
             <div className="flex flex-1 min-h-0">
-              {/* Left rail - Vertical poster */}
-              <div className="w-44 p-6 border-r hidden md:block">
-                {event.poster_vertical_url ? (
-                  <img
-                    src={event.poster_vertical_url}
-                    alt="Event poster"
-                    className="w-full rounded-lg border"
-                    loading="lazy"
-                  />
-                ) : (
-                  <div className="w-full h-64 rounded-lg border bg-gray-100 grid place-items-center text-gray-400 text-xs">
-                    poster
-                  </div>
-                )}
-              </div>
-
-              {/* Right - Event Info */}
+              {/* Event Info */}
               <div className="flex-1 p-8 overflow-y-auto">
                 {/* Header */}
                 <div className="flex items-start justify-between mb-6">
@@ -257,7 +241,11 @@ export default function EventModal({ event, isOpen, onClose }: EventModalProps) 
                     </div>
                     <div className="flex items-center gap-3">
                       <span className="text-gray-400">👥</span>
-                      <span>{event.attendees || 0}/{event.max_attendees || '∞'} attending</span>
+                      <span>
+                        {typeof event.max_attendees === 'number' && event.max_attendees > 0
+                          ? `${event.attendees || 0}/${event.max_attendees} attending`
+                          : `${event.attendees || 0} attending`}
+                      </span>
                     </div>
                     <div className="flex items-center gap-3">
                       <span className="text-gray-400">🏷️</span>

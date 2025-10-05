@@ -7,6 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const { user, signOut, setShowAuthModal } = useAuth();
 
   return (
@@ -49,24 +50,37 @@ export default function Navbar() {
         {/* Right - Login / User + Mobile toggle */}
         <div className="flex items-center justify-end space-x-4">
           {user ? (
-            <div className="hidden md:flex items-center gap-3">
-              <Link
-                href="/profile"
-                className="text-sm text-chinese-blue hover:text-ceil transition-colors"
+            <div className="hidden md:flex items-center gap-3 relative">
+              {/* Avatar dropdown (custom for consistent styling) */}
+              <button
+                className="w-9 h-9 rounded-full bg-gradient-to-br from-chinese-blue to-ceil grid place-items-center text-white text-sm font-bold border border-white/70 focus:outline-none"
+                onClick={() => setMenuOpen((v) => !v)}
+                aria-label="Open profile menu"
               >
-                Profile
-              </Link>
-              <span className="text-sm text-gray-600">
-                {user.user_metadata?.name || user.email?.split("@")[0]}
-              </span>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={signOut}
-                className="px-4 py-2 rounded-full text-sm font-medium transition-all bg-pearly-purple text-white hover:bg-pearly-purple/80"
-              >
-                Sign Out
-              </motion.button>
+                {(user.user_metadata?.name || user.email || "U").charAt(0).toUpperCase()}
+              </button>
+              {menuOpen && (
+                <div className="absolute right-0 top-full mt-2 w-48 rounded-xl bg-white border border-gray-200/70 shadow-lg z-[140] p-1">
+                  <button
+                    className="w-full text-left px-3 py-2 rounded-md hover:bg-gray-100"
+                    onClick={() => {
+                      setMenuOpen(false);
+                      window.location.href = "/profile";
+                    }}
+                  >
+                    profile
+                  </button>
+                  <button
+                    className="w-full text-left px-3 py-2 rounded-md hover:bg-gray-100"
+                    onClick={() => {
+                      setMenuOpen(false);
+                      signOut();
+                    }}
+                  >
+                    sign out
+                  </button>
+                </div>
+              )}
             </div>
           ) : (
             <motion.button
