@@ -5,8 +5,6 @@ import { useSearchParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import EventCard from "@/components/EventCard";
 import EventModal from "@/components/EventModal";
-// If you’re not using the drawer anymore, you can remove this import:
-// import FiltersDrawer from "@/components/FiltersDrawer";
 import { Event } from "@/lib/supabase";
 import { events as sampleEvents, Event as SampleEvent } from "@/lib/sampleData";
 import { parseNaturalLanguageQuery } from "@/lib/geminiSearch";
@@ -14,7 +12,6 @@ import { parseNaturalLanguageQuery } from "@/lib/geminiSearch";
 export default function EventsPage() {
   const searchParams = useSearchParams();
 
-  // REMOVED viewMode state and logic
   const [sortBy, setSortBy] = useState<'soonest' | 'popular' | 'newest'>('soonest');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
@@ -23,12 +20,10 @@ export default function EventsPage() {
   const [loading, setLoading] = useState(true);
   const [searchLoading, setSearchLoading] = useState(false);
 
-  // Filter states
   const [selectedCampuses, setSelectedCampuses] = useState<string[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState<string>('');
 
-  // Natural language search with Gemini
   const handleNaturalSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
@@ -46,7 +41,6 @@ export default function EventsPage() {
     }
   };
 
-  // Fetch events from database on component mount
   useEffect(() => {
     const fetchEvents = async () => {
       try {
@@ -116,7 +110,6 @@ export default function EventsPage() {
     fetchEvents();
   }, []);
 
-  // Apply URL parameters - runs when URL changes
   useEffect(() => {
     const categories = searchParams.get('categories');
     if (categories) setSelectedCategories(categories.split(','));
@@ -136,7 +129,6 @@ export default function EventsPage() {
     setIsModalOpen(true);
   };
 
-  // Filter + Sort
   const filteredEvents = events
     .filter(event => {
       if (searchQuery && selectedCategories.length === 0 && selectedCampuses.length === 0 && !selectedDate) {
@@ -202,7 +194,6 @@ export default function EventsPage() {
       if (sortBy === "newest") {
         return new Date(b.created_at || b.start_at).getTime() - new Date(a.created_at || a.start_at).getTime();
       }
-      // 'popular' (fallback: attendees or tags length)
       const aScore = (a as any).attendees ?? a.tags?.length ?? 0;
       const bScore = (b as any).attendees ?? b.tags?.length ?? 0;
       return bScore - aScore;
@@ -234,7 +225,7 @@ export default function EventsPage() {
         </div>
         
         {/* Top Bar */}
-        <div className="bg-white/40 backdrop-blur-sm rounded-xl p-6 mb-8 border border-gray-200/50">
+        <div className="relative z-[60] bg-white/40 backdrop-blur-sm rounded-xl p-6 mb-8 border border-gray-200/50">
           <div className="flex flex-col lg:flex-row gap-4 items-center justify-between mb-4">
             
             {/* Search Box */}
@@ -322,12 +313,12 @@ export default function EventsPage() {
 
         {/* Events Grid (always grid view now) */}
         {filteredEvents.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="relative z-0 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredEvents.map((event) => (
               <EventCard 
                 key={event.id} 
                 event={event} 
-                viewMode="grid"   // fixed view since list toggle was removed
+                viewMode="grid"
                 onLearnMore={handleLearnMore}
               />
             ))}
@@ -396,7 +387,6 @@ function FilterDropdown({
 }) {
   const [open, setOpen] = React.useState(false);
 
-  // local drafts so user can cancel
   const [campusesDraft, setCampusesDraft] = React.useState<string[]>(selectedCampuses);
   const [categoriesDraft, setCategoriesDraft] = React.useState<string[]>(selectedCategories);
   const [dateDraft, setDateDraft] = React.useState<DatePreset>((selectedDate || "All dates") as DatePreset);
@@ -481,7 +471,7 @@ function FilterDropdown({
           ref={panelRef}
           role="dialog"
           aria-label="Filters"
-          className="absolute right-0 z-20 mt-2 w-[320px] rounded-2xl bg-white border border-gray-200 shadow-sm p-4"
+          className="absolute right-0 z-[70] mt-2 w-[320px] rounded-2xl bg-white border border-gray-200 shadow-sm p-4"
         >
           <div className="flex items-center justify-between mb-3">
             <h4 className="text-sm font-semibold text-gray-900">Filter events</h4>
@@ -657,7 +647,6 @@ function SortDropdown({
         className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white border border-gray-300 hover:border-gray-400 transition text-gray-900"
       >
         <span>{label}</span>
-        {/* Nicer chevron */}
         <svg
           className={`w-4 h-4 transition-transform ${open ? "rotate-180" : "rotate-0"}`}
           xmlns="http://www.w3.org/2000/svg"
