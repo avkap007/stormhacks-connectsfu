@@ -1,80 +1,122 @@
+// app/page.tsx (or app/(marketing)/page.tsx depending on your structure)
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Carousel, { type CarouselItem } from "@/components/FramerAutoCarousel";
 import TrendingCategories, { type Category } from "@/components/TrendingCategories";
 import NewClubsSpotlight, { type Club } from "@/components/NewClubsSpotlight";
-// Use server API for Gemini to keep key private
+
+type EventAPI = {
+  id: string;
+  title: string;
+  description: string | null;
+  category: string | null;
+  campus: string | null;
+  start_at: string;
+  end_at: string | null;
+  poster_url: string | null;
+  poster_vertical_url?: string | null;
+  tags: string[] | null;
+  created_at: string;
+  clubs?: {
+    name: string | null;
+    logo_url: string | null;
+    description?: string | null;
+  } | null;
+};
 
 export default function Home() {
   const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState('');
+
+  const [searchQuery, setSearchQuery] = useState("");
   const [searchLoading, setSearchLoading] = useState(false);
 
-  // Debug: basic mount log (no secrets)
+  // Featured/upcoming events pulled from DB
+  const [featured, setFeatured] = useState<EventAPI[]>([]);
+  const [loadingFeatured, setLoadingFeatured] = useState(true);
+
   useEffect(() => {
-    console.log('Home page mounted');
+    // Pull top (popular) upcoming events
+    const load = async () => {
+      try {
+        const res = await fetch("/api/events?upcoming=1&sort=popular&limit=8", {
+          cache: "no-store",
+        });
+        if (!res.ok) throw new Error("Failed to load events");
+        const data = (await res.json()) as EventAPI[];
+        setFeatured(data);
+      } catch (err) {
+        console.error("Failed to load featured events:", err);
+      } finally {
+        setLoadingFeatured(false);
+      }
+    };
+    load();
   }, []);
+
+  // Adapt DB events to your CarouselItem prop
+  const carouselItems: CarouselItem[] = useMemo(() => {
+    return (featured || []).map((e) => {
+      const img =
+        e.poster_url ||
+        e.poster_vertical_url ||
+        "/assets/fallback_event.jpg"; // optional fallback
+      const badge = e.clubs?.name || e.campus || "SFU";
+      const subtitle =
+        e.description?.slice(0, 120) + (e.description && e.description.length > 120 ? "…" : "") ||
+        "Click to see details, time & location.";
+
+      // clicking the CTA: prefill /events with a search that reliably finds the event
+      const params = new URLSearchParams();
+      params.set("q", e.title);
+      // optionally prefill campus/category to help narrow:
+      if (e.campus) params.set("campuses", e.campus);
+      if (e.category) params.set("categories", e.category);
+      const ctaHref = `/events?${params.toString()}`;
+
+      return {
+        id: e.id,
+        title: e.title,
+        subtitle,
+        imageUrl: img,
+        badge,
+        ctaText: "View in Events",
+        ctaHref,
+      };
+    });
+  }, [featured]);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!searchQuery.trim()) return;
 
     setSearchLoading(true);
     try {
-      // Call server route to parse with Gemini (server-side key)
-      const resp = await fetch('/api/gemini-parse', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: searchQuery })
+      const resp = await fetch("/api/gemini-parse", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: searchQuery }),
       });
       const filters = await resp.json();
 
-      console.log('Filters from Gemini:', filters);
-
-      // Build URL params from filters
       const params = new URLSearchParams();
+      if (filters.categories?.length) params.set("categories", filters.categories.join(","));
+      if (filters.campuses?.length) params.set("campuses", filters.campuses.join(","));
+      if (filters.dateRange) params.set("date", filters.dateRange);
+      if (filters.keywords?.length) params.set("q", filters.keywords.join(" "));
 
-      if (filters.categories && filters.categories.length > 0) {
-        params.append('categories', filters.categories.join(','));
-      }
-      if (filters.campuses && filters.campuses.length > 0) {
-        params.append('campuses', filters.campuses.join(','));
-      }
-      if (filters.dateRange) {
-        params.append('date', filters.dateRange);
-      }
-      if (filters.keywords && filters.keywords.length > 0) {
-        params.append('q', filters.keywords.join(' '));
-      }
-
-      const targetUrl = `/events?${params.toString()}`;
-      console.log('Redirecting to:', targetUrl);
-
-      // Navigate to events page with filters
-      router.push(targetUrl);
-
+      router.push(`/events?${params.toString()}`);
     } catch (error) {
-      console.error('Error with search:', error);
-      // Fallback to simple search
+      console.error("Error with search:", error);
       router.push(`/events?q=${encodeURIComponent(searchQuery)}`);
     } finally {
       setSearchLoading(false);
     }
   };
 
-  const demoItems: CarouselItem[] = [
-    { id: 1, title: "Tech Fair", subtitle: "Meet tech companies, explore career paths, and find your next opportunity.", imageUrl: "/assets/tech_fair.jpg", badge: "CSSS", ctaText: "RSVP", ctaHref: "#" },
-    { id: 2, title: "Explore a Career with Microsoft", subtitle: "Tour Microsoft’s Vancouver office and learn new skills from the pros.", imageUrl: "/assets/enactus.png", badge: "Enactus", ctaText: "RSVP", ctaHref: "#" },
-    { id: 3, title: "Meet the Mentors", subtitle: "Chat with mentors, get advice, and learn from their journeys.", imageUrl: "/assets/gdsc.png", badge: "GDSC", ctaText: "RSVP", ctaHref: "#" },
-    { id: 4, title: "Surrey Study Hall", subtitle: "Study together, stay focused, and make friends along the way.", imageUrl: "/assets/ssss.png", badge: "SSSS", ctaText: "RSVP", ctaHref: "#" },
-    { id: 5, title: "sparkjam", subtitle: "Team up to design creative solutions in a fun, fast-paced challenge.", imageUrl: "/assets/surge.png", badge: "SFU Surge", ctaText: "RSVP", ctaHref: "#" },
-    { id: 6, title: "Git and Personal Website Workshop", subtitle: "No experience needed! Learn Git basics and build your own personal website.", imageUrl: "/assets/wics.png", badge: "WICS", ctaText: "RSVP", ctaHref: "#" },
-  ];
-
+  // your existing static blocks (categories/clubs)
   const categories: Category[] = [
     { id: "getcracked", label: "Get Cracked", href: "/events?category=Community", gif: "/assets/getcracked.gif" },
     { id: "closeknit", label: "Close Knit", href: "/events?category=Social", gif: "/assets/closeknit.gif" },
@@ -112,7 +154,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <div className="absolute inset-0 pattern-dots pattern-blue-500 pattern-bg-grey pattern-size-6 pattern-opacity-20 z-0" />
+
         {/* Hero (screen 1) */}
         <section className="snap-start min-h-[100svh] flex items-center bg-white pt-20 sm:pt-24">
           <div className="container mx-auto px-6 sm:px-8 py-8 sm:py-12 w-full">
@@ -177,16 +219,24 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Featured Events (screen 2) */}
+        {/* Featured Events (live from DB) */}
         <section className="snap-start min-h-[100svh] flex items-center">
           <div className="mx-auto w-full max-w-screen-xl px-6 sm:px-10 lg:px-16 py-12">
             <h2 className="text-3xl sm:text-4xl font-bold text-chinese-blue mb-2 lowercase">
               featured events
             </h2>
-            <p className="text-sm text-gray-600 mb-6">events that are popular this week — click to learn more</p>
-            {/* extra wrapper so cards don't touch sides on huge screens */}
+            <p className="text-sm text-gray-600 mb-6">
+              events that are popular this week — click to learn more
+            </p>
+
             <div className="mx-auto max-w-[1200px]">
-              <Carousel items={demoItems} autoPlayMs={3200} />
+              {loadingFeatured ? (
+                <div className="text-gray-500">loading featured events…</div>
+              ) : carouselItems.length === 0 ? (
+                <div className="text-gray-500">no upcoming events found</div>
+              ) : (
+                <Carousel items={carouselItems} autoPlayMs={3200} />
+              )}
             </div>
           </div>
         </section>

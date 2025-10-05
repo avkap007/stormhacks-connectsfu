@@ -11,10 +11,10 @@ module.exports = {
       colors: {
         'chinese-blue': '#151517ff',
         'ceil': '#9792CB',
-        'blue-mist': '#9bd3ee',
         'pearly-purple': '#AA74A0',
         'dessert-sand': '#E2C99E',
         'antique-ruby': '#852736',
+        'blue-mist': '#9bd3ee',
         'pastel-sky': '#CFE8FF',
         'pastel-blue': '#D7E3FC',
         'pastel-amber': '#FFE6B3',
