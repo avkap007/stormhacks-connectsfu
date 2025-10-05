@@ -8,7 +8,7 @@ import EventModal from "@/components/EventModal";
 import FiltersDrawer from "@/components/FiltersDrawer";
 import { Event } from "@/lib/supabase";
 import { events as sampleEvents, Event as SampleEvent } from "@/lib/sampleData";
-import { parseNaturalLanguageQuery} from "@/lib/geminiSearch";
+import { parseNaturalLanguageQuery } from "@/lib/geminiSearch";
 
 export default function EventsPage() {
   const searchParams = useSearchParams();
@@ -43,18 +43,14 @@ export default function EventsPage() {
   // Natural language search with Gemini
   const handleNaturalSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (!searchQuery.trim()) return;
 
     setSearchLoading(true);
     try {
       const filters = await parseNaturalLanguageQuery(searchQuery);
-      
-      // Apply the filters extracted by Gemini
       if (filters.categories) setSelectedCategories(filters.categories);
       if (filters.campuses) setSelectedCampuses(filters.campuses);
       if (filters.dateRange) setSelectedDate(filters.dateRange);
-      
     } catch (error) {
       console.error('Error with natural language search:', error);
     } finally {
@@ -71,7 +67,6 @@ export default function EventsPage() {
           const data = await response.json();
           setEvents(data);
         } else {
-          console.log('Using sample data as fallback');
           const convertedEvents = sampleEvents.map((event): Event => ({
             id: event.id,
             club_id: '11111111-1111-1111-1111-111111111111',
@@ -93,8 +88,8 @@ export default function EventsPage() {
             clubs: {
               name: event.club,
               logo_url: event.clubAvatar,
-              description: `${event.club} - SFU Student Club`
-            }
+              description: `${event.club} - SFU Student Club`,
+            },
           }));
           setEvents(convertedEvents);
         }
@@ -121,8 +116,8 @@ export default function EventsPage() {
           clubs: {
             name: event.club,
             logo_url: event.clubAvatar,
-            description: `${event.club} - SFU Student Club`
-          }
+            description: `${event.club} - SFU Student Club`,
+          },
         }));
         setEvents(convertedEvents);
       } finally {
@@ -136,25 +131,16 @@ export default function EventsPage() {
   // Apply URL parameters - runs when URL changes
   useEffect(() => {
     const categories = searchParams.get('categories');
-    if (categories) {
-      setSelectedCategories(categories.split(','));
-      console.log('Setting categories from URL:', categories.split(','));
-    }
-    
+    if (categories) setSelectedCategories(categories.split(','));
+
     const campuses = searchParams.get('campuses');
-    if (campuses) {
-      setSelectedCampuses(campuses.split(','));
-    }
+    if (campuses) setSelectedCampuses(campuses.split(','));
     
     const date = searchParams.get('date');
-    if (date) {
-      setSelectedDate(date);
-    }
+    if (date) setSelectedDate(date);
     
     const query = searchParams.get('q');
-    if (query) {
-      setSearchQuery(query);
-    }
+    if (query) setSearchQuery(query);
   }, [searchParams]);
 
   const handleLearnMore = (event: Event) => {
@@ -171,17 +157,11 @@ export default function EventsPage() {
         event.description.toLowerCase().includes(query) ||
         event.clubs?.name.toLowerCase().includes(query) ||
         event.tags?.some(tag => tag.toLowerCase().includes(query));
-      
       if (!matchesSearch) return false;
     }
 
-    if (selectedCampuses.length > 0) {
-      if (!selectedCampuses.includes(event.campus || '')) return false;
-    }
-
-    if (selectedCategories.length > 0) {
-      if (!selectedCategories.includes(event.category || '')) return false;
-    }
+    if (selectedCampuses.length > 0 && !selectedCampuses.includes(event.campus || '')) return false;
+    if (selectedCategories.length > 0 && !selectedCategories.includes(event.category || '')) return false;
 
     if (selectedDate && selectedDate !== 'All dates') {
       const eventDate = new Date(event.start_at);
@@ -192,29 +172,32 @@ export default function EventsPage() {
       tomorrow.setDate(tomorrow.getDate() + 1);
 
       switch (selectedDate) {
-        case 'Today':
+        case 'Today': {
           const eventDay = new Date(eventDate);
           eventDay.setHours(0, 0, 0, 0);
           if (eventDay.getTime() !== today.getTime()) return false;
           break;
-        case 'Tomorrow':
+        }
+        case 'Tomorrow': {
           const eventTomorrow = new Date(eventDate);
           eventTomorrow.setHours(0, 0, 0, 0);
           if (eventTomorrow.getTime() !== tomorrow.getTime()) return false;
           break;
-        case 'This weekend':
+        }
+        case 'This weekend': {
           const dayOfWeek = eventDate.getDay();
-          const daysUntilWeekend = eventDate.getTime() - today.getTime();
-          const inNextWeek = daysUntilWeekend < 7 * 24 * 60 * 60 * 1000;
+          const inNextWeek = eventDate.getTime() - today.getTime() < 7 * 24 * 60 * 60 * 1000;
           if ((dayOfWeek !== 0 && dayOfWeek !== 6) || !inNextWeek) return false;
           break;
-        case 'Next week':
+        }
+        case 'Next week': {
           const nextWeekStart = new Date(today);
           nextWeekStart.setDate(nextWeekStart.getDate() + 1);
           const nextWeekEnd = new Date(today);
           nextWeekEnd.setDate(nextWeekEnd.getDate() + 7);
           if (eventDate < nextWeekStart || eventDate > nextWeekEnd) return false;
           break;
+        }
         case 'This month':
           if (eventDate.getMonth() !== today.getMonth() || eventDate.getFullYear() !== today.getFullYear()) return false;
           break;
@@ -236,43 +219,44 @@ export default function EventsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-ceil/10 via-pearly-purple/5 to-dessert-sand/10">
+    <div className="min-h-screen bg-white">
       <Navbar />
       
       <div className="container mx-auto px-4 py-8 pt-24">
         <div className="text-center mb-10">
-            <h1 className="text-3xl sm:text-4xl font-bold text-chinese-blue mb-2 lowercase">
-              sfu clubs events
-            </h1>
-            <p className="text-sm text-gray-700 max-w-2xl mx-auto">
-              Discover and join exciting events hosted by student clubs across all SFU campuses.
-            </p>
-          </div>
+          <h1 className="text-3xl sm:text-4xl font-bold text-chinese-blue mb-2 lowercase">
+            sfu clubs events
+          </h1>
+          <p className="text-sm text-gray-700 max-w-2xl mx-auto">
+            Discover and join exciting events hosted by student clubs across all SFU campuses.
+          </p>
+        </div>
         
         {/* Top Bar */}
-        <div className="bg-white/40 backdrop-blur-sm rounded-xl p-6 mb-8 border border-gray-200/50 shadow-sm">
+        <div className="bg-white/40 backdrop-blur-sm rounded-xl p-6 mb-8 border border-gray-200/50">
           <div className="flex flex-col lg:flex-row gap-4 items-center justify-between mb-4">
             
-            {/* Search Box */}
-            <div className="flex-1 max-w-md">
-              <form onSubmit={handleNaturalSearch} className="relative">
-                <input
-                  type="text"
-                  placeholder="Try: 'tech events next week' or 'business networking in Burnaby'"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-20 py-3 rounded-lg bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-chinese-blue/50 text-gray-900 placeholder-gray-500"
-                />
-                <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-                  🔍
+            {/* Search Box (Gemini-style styling) */}
+            <div className="flex-1 max-w-md w-full">
+              <form onSubmit={handleNaturalSearch} className="w-full">
+                <div className="flex items-center bg-white border border-gray-300 rounded-full shadow-md px-5 py-3 focus-within:ring-2 focus-within:ring-blue-mist/30 transition">
+                  <span className="mr-2 text-gray-400">🔍</span>
+                  <input
+                    type="text"
+                    placeholder="Try: 'tech events next week' or 'business networking in Burnaby'"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="flex-1 bg-transparent outline-none text-gray-900 placeholder-gray-500 px-2 text-base sm:text-lg"
+                    autoComplete="off"
+                  />
+                  <button
+                    type="submit"
+                    disabled={searchLoading}
+                    className="ml-3 bg-chinese-blue hover:bg-ceil text-white font-medium px-6 py-2 rounded-full transition-all duration-200 disabled:opacity-50"
+                  >
+                    {searchLoading ? "..." : "Search"}
+                  </button>
                 </div>
-                <button
-                  type="submit"
-                  disabled={searchLoading}
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 px-3 py-1.5 bg-chinese-blue text-white rounded-md text-sm font-medium hover:bg-ceil transition-colors disabled:opacity-50"
-                >
-                  {searchLoading ? '...' : 'Search'}
-                </button>
               </form>
             </div>
 
@@ -289,7 +273,7 @@ export default function EventsPage() {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as any)}
-                className="px-3 py-2 rounded-lg bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-chinese-blue/50 text-gray-900"
+                className="px-3 py-2 rounded-lg bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-mist/30 text-gray-900"
               >
                 <option value="soonest">Soonest</option>
                 <option value="popular">Most Popular</option>
@@ -377,11 +361,7 @@ export default function EventsPage() {
         )}
 
         {filteredEvents.length > 0 ? (
-          <div className={`${
-            viewMode === 'grid' 
-              ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' 
-              : 'space-y-4'
-          }`}>
+          <div className={`${viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-4'}`}>
             {filteredEvents.map((event) => (
               <EventCard 
                 key={event.id} 
@@ -402,7 +382,7 @@ export default function EventsPage() {
 
         {filteredEvents.length > 0 && (
           <div className="text-center mt-12">
-            <button className="px-8 py-4 rounded-xl bg-gradient-to-r from-chinese-blue to-ceil text-white hover:shadow-lg transition-all duration-200 font-medium">
+            <button className="px-8 py-4 rounded-xl bg-chinese-blue text-white hover:shadow-lg transition-all duration-200 font-medium">
               Show More Events
             </button>
           </div>

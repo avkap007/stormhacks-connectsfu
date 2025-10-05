@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Event } from "@/lib/supabase";
-import { useState, useMemo } from "react";
+import { useState } from "react";
 
 interface EventCardProps {
   event: Event;
@@ -10,26 +10,9 @@ interface EventCardProps {
   onLearnMore: (event: Event) => void;
 }
 
-// Pastel accent palette (must be explicit Tailwind classes)
-const ACCENT_PALETTE = [
-  { top: "bg-pastel-blue", chip: "bg-pastel-blue text-blue-800 border-blue-200", ring: "ring-pastel-blue/50" },
-  { top: "bg-pastel-amber", chip: "bg-pastel-amber text-amber-800 border-amber-200", ring: "ring-pastel-amber/50" },
-  { top: "bg-pastel-pink", chip: "bg-pastel-pink text-pink-800 border-pink-200", ring: "ring-pastel-pink/50" },
-  { top: "bg-pastel-violet", chip: "bg-pastel-violet text-violet-800 border-violet-200", ring: "ring-pastel-violet/50" },
-  { top: "bg-pastel-green", chip: "bg-pastel-green text-green-800 border-green-200", ring: "ring-pastel-green/50" },
-  { top: "bg-pastel-lavender", chip: "bg-pastel-lavender text-purple-800 border-purple-200", ring: "ring-pastel-lavender/50" },
-  { top: "bg-pastel-peach", chip: "bg-pastel-peach text-orange-800 border-orange-200", ring: "ring-pastel-peach/50" },
-  { top: "bg-pastel-sky", chip: "bg-pastel-sky text-blue-900 border-blue-200", ring: "ring-pastel-sky/50" },
-  { top: "bg-blue-mist", chip: "bg-blue-mist text-white border-blue-mist", ring: "ring-blue-mist/40" },
-];
-
-function pickAccentKey(input: string) {
-  // Simple stable hash to spread items across palette
-  let h = 0;
-  for (let i = 0; i < input.length; i++) h = (h * 31 + input.charCodeAt(i)) | 0;
-  const idx = Math.abs(h) % ACCENT_PALETTE.length;
-  return ACCENT_PALETTE[idx];
-}
+// Reusable blue-mist chip class
+const chipClass =
+  "inline-flex items-center gap-1 px-2.5 py-1 rounded-full border text-[11px] font-medium bg-blue-mist/20 text-gray-900 border-blue-mist";
 
 export default function EventCard({ event, viewMode, onLearnMore }: EventCardProps) {
   const [isLiked, setIsLiked] = useState(false);
@@ -51,29 +34,21 @@ export default function EventCard({ event, viewMode, onLearnMore }: EventCardPro
     const now = new Date();
     const diff = date.getTime() - now.getTime();
     const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
-
     if (days === 0) return "Today";
     if (days === 1) return "Tomorrow";
     if (days < 7) return `In ${days} days`;
     return formatDate(dateString);
   };
 
-  // Choose an accent based on first tag / campus / title (stable but varied)
-  const accent = useMemo(() => {
-    const key = event.tags?.[0] || event.campus || event.title || "default";
-    return pickAccentKey(key);
-  }, [event]);
-
-  // Common header chips
   const DateChip = (
-    <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full border text-[11px] font-medium ${accent.chip}`}>
+    <span className={chipClass}>
       <span>📅</span>
       {getTimeUntil(event.start_at)}
     </span>
   );
 
   const ClubChip = (
-    <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full border text-[11px] font-medium ${accent.chip}`}>
+    <span className={chipClass}>
       <span>🏫</span>
       {event.clubs?.name || "SFU Club"}
     </span>
@@ -84,29 +59,27 @@ export default function EventCard({ event, viewMode, onLearnMore }: EventCardPro
       <motion.div
         whileHover={{ scale: 1.01, y: -2 }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className={`relative bg-white rounded-xl p-6 border border-gray-200 hover:border-gray-300 transition-transform`}
+        className="bg-white rounded-xl p-6 border border-gray-200 hover:border-gray-300 transition-transform"
       >
-        {/* Top accent bar */}
-        <div className={`absolute inset-x-0 top-0 h-1 ${accent.top}`} />
-
         <div className="flex gap-6">
-          {/* Event Info */}
           <div className="flex-1">
             <div className="flex items-start justify-between mb-3">
               <div className="min-w-0">
                 <h3 className="text-lg font-semibold text-gray-900 mb-2 truncate">
                   {event.title}
                 </h3>
-                <div className="flex flex-wrap gap-2">{DateChip}{ClubChip}</div>
+                <div className="flex flex-wrap gap-2">
+                  {DateChip}
+                  {ClubChip}
+                </div>
               </div>
-
-              {/* Secondary Actions */}
               <div className="flex gap-1">
                 <button
                   onClick={() => setIsLiked(!isLiked)}
                   className={`p-2 rounded-lg transition-colors ${
                     isLiked ? "text-red-500" : "text-gray-400 hover:text-red-400"
                   }`}
+                  aria-label="Like"
                 >
                   {isLiked ? "♥" : "♡"}
                 </button>
@@ -115,6 +88,7 @@ export default function EventCard({ event, viewMode, onLearnMore }: EventCardPro
                   className={`p-2 rounded-lg transition-colors ${
                     isSaved ? "text-yellow-500" : "text-gray-400 hover:text-yellow-400"
                   }`}
+                  aria-label="Save"
                 >
                   {isSaved ? "🔖" : "📑"}
                 </button>
@@ -126,23 +100,22 @@ export default function EventCard({ event, viewMode, onLearnMore }: EventCardPro
             </p>
 
             <div className="flex flex-wrap items-center gap-4 text-xs text-gray-600 mb-4">
-              <span className="flex items-center gap-1">📍 {event.campus} • {event.location_text}</span>
-              <span className="flex items-center gap-1">👥 {event.attendees || 0}/{event.max_attendees || "∞"}</span>
+              <span className="flex items-center gap-1">
+                📍 {event.campus} • {event.location_text}
+              </span>
+              <span className="flex items-center gap-1">
+                👥 {event.attendees || 0}/{event.max_attendees || "∞"}
+              </span>
             </div>
 
-            {/* Tags */}
             <div className="flex flex-wrap gap-2 mb-4">
               {event.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className={`px-2 py-1 rounded-md text-xs border ${accent.chip}`}
-                >
+                <span key={tag} className={`${chipClass} text-[12px]`}>
                   #{tag}
                 </span>
               ))}
             </div>
 
-            {/* Primary CTA */}
             <button
               onClick={() => onLearnMore(event)}
               className="px-4 py-2 bg-black text-white rounded-lg hover:bg-neutral-900 transition-colors text-sm font-medium"
@@ -155,7 +128,7 @@ export default function EventCard({ event, viewMode, onLearnMore }: EventCardPro
     );
   }
 
-  // Grid View
+  // Grid view
   return (
     <motion.div
       whileHover={{ scale: 1.02, y: -4 }}
@@ -185,16 +158,19 @@ export default function EventCard({ event, viewMode, onLearnMore }: EventCardPro
           <h3 className="text-base font-semibold text-gray-900 mb-2 line-clamp-2 leading-tight">
             {event.title}
           </h3>
-          <div className="flex flex-wrap gap-2">{DateChip}{ClubChip}</div>
+          <div className="flex flex-wrap gap-2">
+            {DateChip}
+            {ClubChip}
+          </div>
         </div>
 
-        {/* Secondary Actions */}
         <div className="flex gap-1 ml-2">
           <button
             onClick={() => setIsLiked(!isLiked)}
             className={`p-1.5 rounded-md transition-colors ${
               isLiked ? "text-red-500" : "text-gray-400 hover:text-red-400"
             }`}
+            aria-label="Like"
           >
             {isLiked ? "♥" : "♡"}
           </button>
@@ -203,39 +179,45 @@ export default function EventCard({ event, viewMode, onLearnMore }: EventCardPro
             className={`p-1.5 rounded-md transition-colors ${
               isSaved ? "text-yellow-500" : "text-gray-400 hover:text-yellow-400"
             }`}
+            aria-label="Save"
           >
             {isSaved ? "🔖" : "📑"}
           </button>
         </div>
       </div>
 
-      {/* Event Details */}
       <div className="space-y-2 mb-4 text-xs text-gray-600">
-        <div className="flex items-center gap-2"><span>⏱️</span><span>{getTimeUntil(event.start_at)}</span></div>
-        <div className="flex items-center gap-2"><span>📍</span><span>{event.campus}</span></div>
-        <div className="flex items-center gap-2"><span>👥</span><span>{event.attendees || 0} attending</span></div>
+        <div className="flex items-center gap-2">
+          <span>⏱️</span>
+          <span>{getTimeUntil(event.start_at)}</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span>📍</span>
+          <span>{event.campus}</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span>👥</span>
+          <span>{event.attendees || 0} attending</span>
+        </div>
       </div>
 
-      {/* Description */}
       <p className="text-gray-700 mb-4 text-sm line-clamp-3 flex-1 leading-relaxed">
         {event.description}
       </p>
 
-      {/* Tags */}
       <div className="flex flex-wrap gap-2 mb-4">
         {event.tags.slice(0, 3).map((tag) => (
-          <span key={tag} className={`px-2 py-1 rounded-md text-xs border ${accent.chip}`}>
+          <span key={tag} className={`${chipClass} text-[12px]`}>
             #{tag}
           </span>
         ))}
         {event.tags.length > 3 && (
-          <span className={`px-2 py-1 rounded-md text-xs border bg-gray-50 text-gray-500 border-gray-200`}>
+          <span className="px-2 py-1 rounded-md text-xs border bg-gray-50 text-gray-500 border-gray-200">
             +{event.tags.length - 3}
           </span>
         )}
       </div>
 
-      {/* Primary CTA */}
       <button
         onClick={() => onLearnMore(event)}
         className="w-full px-4 py-2.5 bg-black text-white rounded-lg hover:bg-neutral-900 transition-colors text-sm font-medium"
