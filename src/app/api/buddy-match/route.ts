@@ -75,7 +75,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // If user wants to match now, try to find a compatible buddy
+    // MOCKED: If user wants to match now, do a simple first-open pairing (no AI)
     if (visibility === 'match_now') {
       const { data: potentialBuddies, error: searchError } = await supabase
         .from('buddy_requests')
@@ -98,17 +98,8 @@ export async function POST(request: Request) {
       if (searchError) {
         console.error('Error searching for buddies:', searchError);
       } else if (potentialBuddies && potentialBuddies.length > 0) {
-        // Simple matching logic - find first compatible buddy
-        const compatibleBuddy = potentialBuddies.find(buddy => {
-          // Check gender preference compatibility
-          if (genderPreference === 'same_gender' && buddy.gender_preference === 'same_gender') {
-            return true; // Both want same gender - would need actual gender data
-          }
-          if (genderPreference === 'open' || buddy.gender_preference === 'open') {
-            return true; // At least one is open
-          }
-          return false;
-        });
+        // Simplified: pick first open request as a demo match
+        const compatibleBuddy = potentialBuddies[0];
 
         if (compatibleBuddy) {
           // Create buddy match

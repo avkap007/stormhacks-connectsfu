@@ -99,26 +99,35 @@ export default function UserProfile() {
         setUserEvents(events);
       }
 
-      // Set profile data from user metadata
-      setProfile({
-        name: user.user_metadata?.name || user.email?.split('@')[0] || 'User',
+      // Prefer server-side user_profiles (buddy engine source of truth)
+      const { data: profileRow } = await supabase
+        .from('user_profiles')
+        .select('name, bio, interests, phone, dietary_restrictions, emergency_contact, emergency_phone, created_at')
+        .eq('id', user.id)
+        .single();
+
+      const meta = user.user_metadata || {} as any;
+      const merged = {
+        name: profileRow?.name || meta.name || user.email?.split('@')[0] || 'User',
         email: user.email || '',
-        bio: user.user_metadata?.bio || '',
-        interests: user.user_metadata?.interests || [],
-        phone: user.user_metadata?.phone || '',
-        dietary_restrictions: user.user_metadata?.dietary_restrictions || '',
-        emergency_contact: user.user_metadata?.emergency_contact || '',
-        emergency_phone: user.user_metadata?.emergency_phone || '',
+        bio: profileRow?.bio ?? meta.bio ?? '',
+        interests: (profileRow?.interests ?? meta.interests ?? []) as string[],
+        phone: profileRow?.phone ?? meta.phone ?? '',
+        dietary_restrictions: profileRow?.dietary_restrictions ?? meta.dietary_restrictions ?? '',
+        emergency_contact: profileRow?.emergency_contact ?? meta.emergency_contact ?? '',
+        emergency_phone: profileRow?.emergency_phone ?? meta.emergency_phone ?? '',
         created_at: user.created_at
-      });
+      } as UserProfileData & { email: string };
+
+      setProfile(merged);
 
       setFormData({
-        bio: user.user_metadata?.bio || '',
-        interests: (user.user_metadata?.interests || []).join(', '),
-        phone: user.user_metadata?.phone || '',
-        dietary_restrictions: user.user_metadata?.dietary_restrictions || '',
-        emergency_contact: user.user_metadata?.emergency_contact || '',
-        emergency_phone: user.user_metadata?.emergency_phone || ''
+        bio: merged.bio || '',
+        interests: (merged.interests || []).join(', '),
+        phone: merged.phone || '',
+        dietary_restrictions: merged.dietary_restrictions || '',
+        emergency_contact: merged.emergency_contact || '',
+        emergency_phone: merged.emergency_phone || ''
       });
 
     } catch (error) {
@@ -148,6 +157,23 @@ export default function UserProfile() {
       if (error) {
         console.error('Error updating profile:', error);
       } else {
+        // ALSO persist to user_profiles (used by buddy matching)
+        const { error: upsertErr } = await supabase
+          .from('user_profiles')
+          .upsert({
+            id: user.id,
+            name: user.user_metadata?.name || user.email?.split('@')[0] || 'User',
+            bio: formData.bio || null,
+            interests: interests.length > 0 ? interests : null,
+            phone: formData.phone || null,
+            dietary_restrictions: formData.dietary_restrictions || null,
+            emergency_contact: formData.emergency_contact || null,
+            emergency_phone: formData.emergency_phone || null
+          }, { onConflict: 'id' });
+        if (upsertErr) {
+          console.error('Error upserting user_profiles:', upsertErr);
+        }
+
         setEditing(false);
         loadUserData(); // Reload data
       }
@@ -188,11 +214,11 @@ export default function UserProfile() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white rounded-2xl shadow-lg p-6"
+        className="bg-white rounded-2xl border border-gray-200/60 p-6"
       >
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center space-x-4">
-            <div className="w-16 h-16 bg-gradient-to-r from-chinese-blue to-ceil rounded-full flex items-center justify-center text-white text-2xl font-bold">
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-chinese-blue to-ceil grid place-items-center text-white text-2xl font-bold border">
               {profile.name.charAt(0).toUpperCase()}
             </div>
             <div>
@@ -212,7 +238,7 @@ export default function UserProfile() {
         </div>
 
         {profile.bio && (
-          <p className="text-gray-700 mb-4">{profile.bio}</p>
+          <p className="text-chinese-blue mb-4">{profile.bio}</p>
         )}
 
         {profile.interests && profile.interests.length > 0 && (
@@ -220,7 +246,7 @@ export default function UserProfile() {
             {profile.interests.map((interest, index) => (
               <span
                 key={index}
-                className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm"
+                className="px-3 py-1 rounded-full text-sm bg-chinese-blue/10 text-chinese-blue border border-chinese-blue/20"
               >
                 {interest}
               </span>
@@ -234,7 +260,7 @@ export default function UserProfile() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-2xl shadow-lg p-6"
+          className="bg-white rounded-2xl border border-gray-200/60 p-6"
         >
           <h2 className="text-xl font-semibold text-gray-900 mb-4">Edit Profile</h2>
           <div className="space-y-4">
@@ -338,7 +364,7 @@ export default function UserProfile() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white rounded-2xl shadow-lg p-6"
+        className="bg-white rounded-2xl border border-gray-200/60 p-6"
       >
         <h2 className="text-xl font-semibold text-gray-900 mb-4">Messages</h2>
         <p className="text-gray-600 mb-4">Your buddy matches and conversations.</p>
@@ -349,7 +375,7 @@ export default function UserProfile() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white rounded-2xl shadow-lg p-6"
+        className="bg-white rounded-2xl border border-gray-200/60 p-6"
       >
         <h2 className="text-xl font-semibold text-gray-900 mb-4">Your Events</h2>
         {userEvents.length === 0 ? (
