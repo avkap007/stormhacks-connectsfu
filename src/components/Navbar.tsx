@@ -36,13 +36,13 @@ export default function Navbar() {
         {/* Center - Navigation (always centered because of grid) */}
         <nav className="hidden md:flex justify-center gap-8 text-base font-normal">
           <Link href="/" className="hover:text-ceil transition-colors duration-200">
-            Home
+            home
           </Link>
           <Link href="/clubs" className="hover:text-ceil transition-colors duration-200">
-            Clubs
+            clubs
           </Link>
           <Link href="/events" className="hover:text-ceil transition-colors duration-200">
-            Events
+            events
           </Link>
         </nav>
 
@@ -75,7 +75,7 @@ export default function Navbar() {
               onClick={() => setShowAuthModal(true)}
               className="px-6 py-2 rounded-full text-sm font-medium transition-all bg-chinese-blue text-white hover:bg-ceil hidden md:inline-block"
             >
-              Login
+              login
             </motion.button>
           )}
 
@@ -103,16 +103,13 @@ export default function Navbar() {
         >
           <div className="flex flex-col space-y-4 text-center">
             <Link href="/" onClick={() => setIsOpen(false)} className="text-lg font-normal text-chinese-blue hover:text-ceil transition-colors">
-              Home
+              home
             </Link>
             <Link href="/clubs" onClick={() => setIsOpen(false)} className="text-lg font-normal text-chinese-blue hover:text-ceil transition-colors">
-              Clubs
+              clubs
             </Link>
             <Link href="/events" onClick={() => setIsOpen(false)} className="text-lg font-normal text-chinese-blue hover:text-ceil transition-colors">
-              Events
-            </Link>
-            <Link href="#feedback" onClick={() => setIsOpen(false)} className="text-lg font-normal text-chinese-blue hover:text-ceil transition-colors">
-              Feedback
+              events
             </Link>
 
             {user ? (
@@ -122,18 +119,18 @@ export default function Navbar() {
                   onClick={() => setIsOpen(false)}
                   className="block px-6 py-2 rounded-full text-sm font-medium bg-chinese-blue text-white hover:bg-ceil transition-colors text-center"
                 >
-                  Profile
+                  profile
                 </Link>
                 <button
                   onClick={signOut}
                   className="w-full px-6 py-2 rounded-full text-sm font-medium bg-pearly-purple text-white hover:bg-pearly-purple/80 transition-colors"
                 >
-                  Sign Out
+                  sign out
                 </button>
               </div>
             ) : (
               <button onClick={() => setShowAuthModal(true)} className="mt-4 px-6 py-2 rounded-full text-sm font-medium bg-chinese-blue text-white hover:bg-ceil transition-colors">
-                Login
+                login
               </button>
             )}
           </div>
