@@ -35,6 +35,7 @@ export default function Home() {
       <main className="bg-white">
         <div className="absolute inset-0 pattern-dots pattern-blue-500 pattern-bg-grey pattern-size-6 pattern-opacity-20 z-0" />
         {/* Hero (screen 1) */}
+<<<<<<< HEAD
         <section className="snap-start min-h-[100svh] flex items-center">
           <div className="mx-auto w-full max-w-screen-xl px-6 sm:px-10 lg:px-16 py-16 sm:py-20">
             <h1 className="text-5xl sm:text-6xl font-bold text-chinese-blue flex flex-wrap items-center justify-center text-center leading-tight">
@@ -63,6 +64,24 @@ export default function Home() {
               </p>
               <div className="w-full max-w-md mx-auto mb-10">
                 <div className="flex items-center bg-white border border-gray-300 rounded-full shadow-md px-4 py-2.5 focus-within:ring-2 focus-within:ring-chinese-blue/30 transition">
+=======
+        <section className="snap-start min-h-[90svh] flex items-center bg-white">
+          <div className="container mx-auto px-6 sm:px-8 py-12 sm:py-16 w-full">
+            <div className="text-center max-w-3xl mx-auto">
+              {/* Title */}
+              <h1 className="text-5xl sm:text-6xl font-bold text-chinese-blue mb-5">
+                Welcome to ConnectSFU
+              </h1>
+
+              {/* Subtitle */}
+              <p className="text-lg sm:text-xl text-gray-600 mb-10">
+                Find events, make friends, and discover your SFU community! Never go to an event alone again.
+              </p>
+
+              {/* Search Input */}
+              <div className="w-full max-w-2xl mx-auto mb-10">
+                <div className="flex items-center bg-white border border-gray-300 rounded-full shadow-md px-5 py-3 focus-within:ring-2 focus-within:ring-chinese-blue/30 transition">
+>>>>>>> ebb5b05 (changing page spacing)
                   <input
                     type="text"
                     placeholder="Search events, clubs, or people..."
@@ -118,9 +137,9 @@ export default function Home() {
         </section>
 
         {/* Featured Events (screen 2) */}
-        <section className="snap-start min-h-[100svh] flex items-center">
-          <div className="container mx-auto px-4 py-12 w-full">
-            <h2 className="text-2xl sm:text-3xl font-bold text-chinese-blue mb-4 sm:mb-6 text-center">
+        <section className="snap-start min-h-[90svh] flex items-center">
+          <div className="container mx-auto px-4 py-8 sm:py-10 w-full">
+            <h2 className="text-2xl sm:text-3xl font-bold text-chinese-blue mb-4 sm:mb-5 text-center">
               Featured Events
             </h2>
             <Carousel items={demoItems} autoPlayMs={3200} />
@@ -128,18 +147,20 @@ export default function Home() {
         </section>
 
         {/* Trending Categories (screen 3) */}
-        <section className="snap-start min-h-[100svh] flex items-center">
-          <div className="container mx-auto px-4 py-12 w-full">
-            <TrendingCategories categories={categories} className="mt-6" />
+        <section className="snap-start min-h-[90svh] flex items-center">
+          <div className="container mx-auto px-4 py-8 sm:py-10 w-full">
+            <TrendingCategories categories={categories} className="mt-4" />
           </div>
-        </section> 
+        </section>
 
         {/* New Clubs Spotlight (screen 4) */}
-        <section className="snap-start min-h-[100svh] flex items-center">
-          <div className="mx-auto w-full max-w-screen-xl px-6 sm:px-10 lg:px-16 py-12">
+        <section className="snap-start min-h-[90svh] flex items-center">
+          <div className="container mx-auto px-4 py-8 sm:py-10 w-full">
             <NewClubsSpotlight clubs={clubs} />
           </div>
         </section>
+
+
       </main>
     </>
   );
