@@ -16,6 +16,24 @@ export default function EventsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // Filter states
+  const [selectedCampuses, setSelectedCampuses] = useState<string[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedDate, setSelectedDate] = useState<string>('');
+
+  // Remove filter functions
+  const removeCampus = (campus: string) => {
+    setSelectedCampuses(selectedCampuses.filter(c => c !== campus));
+  };
+
+  const removeCategory = (category: string) => {
+    setSelectedCategories(selectedCategories.filter(c => c !== category));
+  };
+
+  const removeDate = () => {
+    setSelectedDate('');
+  };
 
   // Fetch events from database on component mount
   useEffect(() => {
@@ -28,17 +46,17 @@ export default function EventsPage() {
         } else {
           // Fallback to sample data if API fails
           console.log('Using sample data as fallback');
-          // Convert sample events to database format for now
+          // Convert sample events to database format
           const convertedEvents = sampleEvents.map((event): Event => ({
             id: event.id,
-            club_id: '11111111-1111-1111-1111-111111111111', // Default club
+            club_id: '11111111-1111-1111-1111-111111111111',
             title: event.title,
             description: event.description,
             category: event.category,
             campus: event.campus,
             location_text: event.location,
             start_at: event.date.toISOString(),
-            end_at: new Date(event.date.getTime() + 2 * 60 * 60 * 1000).toISOString(), // 2 hours later
+            end_at: new Date(event.date.getTime() + 2 * 60 * 60 * 1000).toISOString(),
             poster_url: event.image,
             created_by: '00000000-0000-0000-0000-000000000000',
             status: 'active',
@@ -57,7 +75,32 @@ export default function EventsPage() {
         }
       } catch (error) {
         console.error('Error fetching events:', error);
-        // Keep using sample data
+        // Fallback to sample data on error
+        const convertedEvents = sampleEvents.map((event): Event => ({
+          id: event.id,
+          club_id: '11111111-1111-1111-1111-111111111111',
+          title: event.title,
+          description: event.description,
+          category: event.category,
+          campus: event.campus,
+          location_text: event.location,
+          start_at: event.date.toISOString(),
+          end_at: new Date(event.date.getTime() + 2 * 60 * 60 * 1000).toISOString(),
+          poster_url: event.image,
+          created_by: '00000000-0000-0000-0000-000000000000',
+          status: 'active',
+          max_attendees: event.maxAttendees,
+          is_free: event.isFree,
+          cost: event.cost || 0,
+          tags: event.tags,
+          created_at: new Date().toISOString(),
+          clubs: {
+            name: event.club,
+            logo_url: event.clubAvatar,
+            description: `${event.club} - SFU Student Club`
+          }
+        }));
+        setEvents(convertedEvents);
       } finally {
         setLoading(false);
       }
@@ -71,13 +114,21 @@ export default function EventsPage() {
     setIsModalOpen(true);
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-ceil/10 via-pearly-purple/5 to-dessert-sand/10 pt-16 flex items-center justify-center">
+        <div className="text-xl text-gray-600">Loading events...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-ceil/10 via-pearly-purple/5 to-dessert-sand/10 pt-16">
       <div className="container mx-auto px-4 py-8">
         
         {/* Top Bar */}
         <div className="bg-white/40 backdrop-blur-sm rounded-xl p-6 mb-8 border border-gray-200/50 shadow-sm">
-          <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
+          <div className="flex flex-col lg:flex-row gap-4 items-center justify-between mb-4">
             
             {/* Search Box */}
             <div className="flex-1 max-w-md">
@@ -142,35 +193,96 @@ export default function EventsPage() {
               </div>
             </div>
           </div>
+
+          {/* Active Filters Row */}
+          {(selectedCampuses.length > 0 || selectedCategories.length > 0 || selectedDate) && (
+            <div className="flex flex-wrap gap-2 items-center pt-4 border-t border-gray-200/50">
+              <span className="text-sm font-medium text-gray-700">Active:</span>
+              
+              {/* Campus filters */}
+              {selectedCampuses.map(campus => (
+                <div key={campus} className="flex items-center gap-2 px-3 py-1.5 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                  <span>{campus}</span>
+                  <button 
+                    onClick={() => removeCampus(campus)}
+                    className="hover:bg-blue-200 rounded-full p-0.5 transition-colors"
+                  >
+                    <span className="text-blue-600">✕</span>
+                  </button>
+                </div>
+              ))}
+              
+              {/* Category filters */}
+              {selectedCategories.map(category => (
+                <div key={category} className="flex items-center gap-2 px-3 py-1.5 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">
+                  <span>{category}</span>
+                  <button 
+                    onClick={() => removeCategory(category)}
+                    className="hover:bg-purple-200 rounded-full p-0.5 transition-colors"
+                  >
+                    <span className="text-purple-600">✕</span>
+                  </button>
+                </div>
+              ))}
+              
+              {/* Date filter */}
+              {selectedDate && (
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                  <span>{selectedDate}</span>
+                  <button 
+                    onClick={removeDate}
+                    className="hover:bg-green-200 rounded-full p-0.5 transition-colors"
+                  >
+                    <span className="text-green-600">✕</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Filters Drawer */}
         {showFilters && (
-          <FiltersDrawer onClose={() => setShowFilters(false)} />
+          <FiltersDrawer 
+            onClose={() => setShowFilters(false)}
+            onApplyFilters={(campuses, categories, date) => {
+              setSelectedCampuses(campuses);
+              setSelectedCategories(categories);
+              setSelectedDate(date);
+            }}
+          />
         )}
 
         {/* Events Grid/List */}
-        <div className={`${
-          viewMode === 'grid' 
-            ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' 
-            : 'space-y-4'
-        }`}>
-          {events.map((event) => (
-            <EventCard 
-              key={event.id} 
-              event={event} 
-              viewMode={viewMode}
-              onLearnMore={handleLearnMore}
-            />
-          ))}
-        </div>
+        {events.length > 0 ? (
+          <div className={`${
+            viewMode === 'grid' 
+              ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' 
+              : 'space-y-4'
+          }`}>
+            {events.map((event) => (
+              <EventCard 
+                key={event.id} 
+                event={event} 
+                viewMode={viewMode}
+                onLearnMore={handleLearnMore}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-xl text-gray-600">No events found</p>
+          </div>
+        )}
 
         {/* Load More Button */}
-        <div className="text-center mt-12">
-          <button className="px-8 py-4 rounded-xl bg-gradient-to-r from-chinese-blue to-ceil text-white hover:shadow-lg transition-all duration-200 font-medium">
-            Show More Events
-          </button>
-        </div>
+        {events.length > 0 && (
+          <div className="text-center mt-12">
+            <button className="px-8 py-4 rounded-xl bg-gradient-to-r from-chinese-blue to-ceil text-white hover:shadow-lg transition-all duration-200 font-medium">
+              Show More Events
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Event Modal */}
