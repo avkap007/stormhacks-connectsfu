@@ -2,9 +2,15 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { AuthProvider } from '@/contexts/AuthContext'
-import Navbar from '@/components/Navbar'
+import { Roboto } from "next/font/google";
 
 const inter = Inter({ subsets: ['latin'] })
+
+const roboto = Roboto({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "700"],
+  variable: "--font-roboto",
+});
 
 export const metadata: Metadata = {
   title: 'ConnectSFU - Find Your Campus Community',
@@ -17,10 +23,9 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
+    <html lang="en" className={roboto.variable}>
+      <body className="font-sans lg:snap-y lg:snap-mandatory">
         <AuthProvider>
-          <Navbar />
           {children}
         </AuthProvider>
       </body>

@@ -49,7 +49,7 @@ export default function EventModal({ event, isOpen, onClose }: EventModalProps) 
       const handleRsvp = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!user || !event) return;
+        if (!event) return;
 
         try {
           // Create RSVP in database with all the form data
@@ -57,12 +57,11 @@ export default function EventModal({ event, isOpen, onClose }: EventModalProps) 
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token || ''}`,
             },
             body: JSON.stringify({
               eventId: event.id,
-              name: user.user_metadata?.name || rsvpData.name,
-              email: user.email || rsvpData.email,
+              name: rsvpData.name || 'Demo User',
+              email: rsvpData.email || 'demo@sfu.ca',
               phone: rsvpData.phone,
               dietaryRestrictions: rsvpData.dietaryRestrictions,
               emergencyContact: rsvpData.emergencyContact,
@@ -75,20 +74,20 @@ export default function EventModal({ event, isOpen, onClose }: EventModalProps) 
           });
 
           if (!response.ok) {
-            throw new Error('Failed to create RSVP');
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to create RSVP');
           }
 
-          const rsvp = await response.json();
-
-          // Send confirmation email
-          await sendConfirmationEmail(rsvp, event.title);
+          const result = await response.json();
 
           setIsRsvpSubmitted(true);
+          setCalendarFeedback('✅ RSVP submitted successfully!');
 
           // Close modal after 3 seconds
           setTimeout(() => {
             onClose();
             setIsRsvpSubmitted(false);
+            setCalendarFeedback('');
           }, 3000);
 
         } catch (error) {

@@ -16,23 +16,28 @@ export default function Navbar() {
       <div className="flex items-center justify-between px-8 h-16 w-full">
 
         {/* Left Side - ConnectSFU Logo */}
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="flex items-center space-x-2"
-        >
-          <span className="text-2xl">🎉</span>
-          <span className="text-xl font-bold text-chinese-blue">ConnectSFU</span>
-        </motion.div>
+        <Link href="/" className="flex items-center space-x-2">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="flex items-center space-x-2"
+          >
+            <span className="text-2xl">🎉</span>
+            <span className="text-xl font-bold text-chinese-blue">ConnectSFU</span>
+          </motion.div>
+        </Link>
 
         {/* Right Side - Navigation + Login */}
         <div className="flex items-center space-x-8 text-lg font-medium">
           <nav className="hidden md:flex space-x-8">
-            <Link href="#home" className="hover:text-ceil transition-colors duration-200">
+            <Link href="/" className="hover:text-ceil transition-colors duration-200">
               Home
             </Link>
+            <Link href="/clubs" className="hover:text-ceil transition-colors duration-200">
+              Clubs
+            </Link>
             <Link href="/events" className="hover:text-ceil transition-colors duration-200">
-              Discover
+              Events
             </Link>
             <Link href="#feedback" className="hover:text-ceil transition-colors duration-200">
               Feedback
@@ -89,18 +94,25 @@ export default function Navbar() {
         >
           <div className="flex flex-col space-y-4 text-center">
             <Link 
-              href="#home" 
+              href="/" 
               onClick={() => setIsOpen(false)}
               className="text-lg font-medium text-chinese-blue hover:text-ceil transition-colors"
             >
               Home
             </Link>
             <Link 
+              href="/clubs" 
+              onClick={() => setIsOpen(false)}
+              className="text-lg font-medium text-chinese-blue hover:text-ceil transition-colors"
+            >
+              Clubs
+            </Link>
+            <Link 
               href="/events" 
               onClick={() => setIsOpen(false)}
               className="text-lg font-medium text-chinese-blue hover:text-ceil transition-colors"
             >
-              Discover
+              Events
             </Link>
             <Link 
               href="#feedback" 
