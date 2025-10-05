@@ -279,7 +279,7 @@ function Slide({ item }: { item: CarouselItem }) {
           {item.title && <h3 className="text-lg sm:text-xl font-bold text-chinese-blue mb-1.5 line-clamp-2">{item.title}</h3>}
           {item.subtitle && <p className="text-[14px] text-gray-700 leading-relaxed mb-3 line-clamp-3">{item.subtitle}</p>}
           {item.ctaText && item.ctaHref && (
-            <a href={item.ctaHref} className="mt-auto inline-flex items-center justify-center px-4 py-2 rounded-xl bg-blue text-chinese-blue text-sm font-medium hover:bg-pastel-blue transition">
+            <a href={item.ctaHref} className="mt-auto inline-flex items-center justify-center px-4 py-2 rounded-xl bg-blue-mist text-chinese-blue text-sm font-medium hover:bg-pastel-sky transition">
               {item.ctaText}
             </a>
           )}
