@@ -1,9 +1,61 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Carousel, { type CarouselItem } from "@/components/FramerAutoCarousel";
 import TrendingCategories, { type Category } from "@/components/TrendingCategories";
 import NewClubsSpotlight, { type Club } from "@/components/NewClubsSpotlight";
+import { parseNaturalLanguageQuery } from "@/lib/geminiSearch";
 
 export default function Home() {
+  const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchLoading, setSearchLoading] = useState(false);
+
+  const handleSearch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!searchQuery.trim()) return;
+
+    setSearchLoading(true);
+    try {
+      // Use Gemini to parse the natural language query
+      const filters = await parseNaturalLanguageQuery(searchQuery);
+      
+      console.log('Filters from Gemini:', filters);
+      
+      // Build URL params from filters
+      const params = new URLSearchParams();
+      
+      if (filters.categories && filters.categories.length > 0) {
+        params.append('categories', filters.categories.join(','));
+      }
+      if (filters.campuses && filters.campuses.length > 0) {
+        params.append('campuses', filters.campuses.join(','));
+      }
+      if (filters.dateRange) {
+        params.append('date', filters.dateRange);
+      }
+      if (filters.keywords && filters.keywords.length > 0) {
+        params.append('q', filters.keywords.join(' '));
+      }
+      
+      const targetUrl = `/events?${params.toString()}`;
+      console.log('Redirecting to:', targetUrl);
+      
+      // Navigate to events page with filters
+      router.push(targetUrl);
+      
+    } catch (error) {
+      console.error('Error with search:', error);
+      // Fallback to simple search
+      router.push(`/events?q=${encodeURIComponent(searchQuery)}`);
+    } finally {
+      setSearchLoading(false);
+    }
+  };
+
   const demoItems: CarouselItem[] = [
     { id: 1,  title: "Web Development Workshop", subtitle: "Learn React, Next.js, and modern practices. Perfect for beginners!", imageUrl: "/assets/tech_fair.jpg", badge: "GDSC SFU", ctaText: "RSVP", ctaHref: "#" },
     { id: 2,  title: "Hack Night @ Burnaby",      subtitle: "Pair up, ship something fun, meet new friends!", imageUrl: "/assets/enactus.png", badge: "ConnectSFU", ctaText: "RSVP", ctaHref: "#" },
@@ -15,10 +67,10 @@ export default function Home() {
 
   const categories: Category[] = [
     { id: "getcracked", label: "Get Cracked", href: "/events?category=Community", gif: "/assets/getcracked.gif" },
-    { id: "closeknit",  label: "Close Knit",   href: "/events?category=Social",    gif: "/assets/closeknit.gif" },
-    { id: "funsies",    label: "Funsies",      href: "/events?category=Friends",   gif: "/assets/funsies.gif" },
-    { id: "getcrafty",  label: "Get Crafty",   href: "/events?category=Arts",      gif: "/assets/getcrafty.gif" },
-    { id: "schmooze",   label: "Schmooze",     href: "/events?category=LevelUp",   gif: "/assets/schmooze.gif" },
+    { id: "closeknit", label: "Close Knit", href: "/events?category=Social", gif: "/assets/closeknit.gif" },
+    { id: "funsies", label: "Funsies", href: "/events?category=Friends", gif: "/assets/funsies.gif" },
+    { id: "getcrafty", label: "Get Crafty", href: "/events?category=Arts", gif: "/assets/getcrafty.gif" },
+    { id: "schmooze", label: "Schmooze", href: "/events?category=LevelUp", gif: "/assets/schmooze.gif" },
   ];
 
   const clubs: Club[] = [
@@ -61,20 +113,30 @@ export default function Home() {
               <p className="text-lg sm:text-xl text-gray-600 mb-12">
                 Find events, make friends, and discover your SFU community! Never go to an event alone again.
               </p>
-              <div className="w-full max-w-md mx-auto mb-10">
-                <div className="flex items-center bg-white border border-gray-300 rounded-full shadow-md px-4 py-2.5 focus-within:ring-2 focus-within:ring-chinese-blue/30 transition">
+
+              {/* Search Input with Gemini */}
+              <form onSubmit={handleSearch} className="w-full max-w-2xl mx-auto mb-12">
+                <div className="flex items-center bg-white border border-gray-300 rounded-full shadow-md px-5 py-3 focus-within:ring-2 focus-within:ring-chinese-blue/30 transition">
                   <input
                     type="text"
-                    placeholder="Search events, clubs, or people..."
-                    className="flex-1 bg-transparent outline-none text-gray-800 placeholder-gray-400 px-2 text-sm sm:text-base"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Try: 'tech events next week' or 'business networking in Burnaby'"
+                    className="flex-1 bg-transparent outline-none text-gray-800 placeholder-gray-400 px-2 text-base sm:text-lg"
+                    disabled={searchLoading}
                   />
                   <button
-                    className="ml-2 bg-chinese-blue hover:bg-ceil text-white font-medium px-5 py-1.5 rounded-full transition-all duration-200"
+                    type="submit"
+                    disabled={searchLoading}
+                    className="ml-3 bg-chinese-blue hover:bg-ceil text-white font-medium px-6 py-2 rounded-full transition-all duration-200 disabled:opacity-50"
                   >
-                    Search
+                    {searchLoading ? 'Searching...' : 'Search'}
                   </button>
                 </div>
-              </div>
+                <p className="text-sm text-gray-500 mt-3">
+                  Powered by AI - search naturally like you're talking to a friend
+                </p>
+              </form>
             </div>
             {/* image */}
             <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -101,6 +163,13 @@ export default function Home() {
               </div>
 
             </div>
+          </div>
+        </section>
+
+        {/* Trending Categories (screen 3) */}
+        <section className="snap-start min-h-[100svh] flex items-center">
+          <div className="container mx-auto px-4 py-12 w-full">
+            <TrendingCategories categories={categories} className="mt-6" />
           </div>
         </section>
 
