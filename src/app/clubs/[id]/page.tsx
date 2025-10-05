@@ -370,11 +370,18 @@ export default function ClubDetailPage() {
 
                     {/* Event Poster - Right Side */}
                     <div className="w-56 h-72 flex-shrink-0">
-                    <img 
+                    <a 
+                        href={pastEvents[index % pastEvents.length]?.poster || "/assets/gdsc_clubs_day.png"}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block w-full h-full cursor-pointer"
+                    >
+                        <img 
                         src={pastEvents[index % pastEvents.length]?.poster || "/assets/gdsc_clubs_day.png"}
                         alt={event.title}
-                        className="w-full h-full object-cover rounded-xl shadow-md"
-                    />
+                        className="w-full h-full object-cover rounded-xl shadow-md hover:opacity-90 transition-opacity"
+                        />
+                    </a>
                     </div>
                 </div>
                 </div>
@@ -405,18 +412,25 @@ export default function ClubDetailPage() {
                     key={event.id}
                     className="group bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-lg transition-all"
                   >
-                    <div className="relative h-64 overflow-hidden bg-gray-100">
-                      <img 
-                        src={event.poster} 
-                        alt={event.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                      <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-                        <h3 className="text-lg font-bold mb-1">{event.title}</h3>
-                        <p className="text-sm text-white/90">{event.date}</p>
-                      </div>
-                    </div>
+            <div className="relative h-64 overflow-hidden bg-gray-100">
+            <a 
+                href={event.poster}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="absolute inset-0 z-10"
+            >
+                <img 
+                src={event.poster} 
+                alt={event.title}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+            </a>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
+            <div className="absolute bottom-0 left-0 right-0 p-4 text-white pointer-events-none">
+                <h3 className="text-lg font-bold mb-1">{event.title}</h3>
+                <p className="text-sm text-white/90">{event.date}</p>
+            </div>
+            </div>
                     
                     <div className="p-4">
                       <div className="flex items-center gap-2 text-gray-600 mb-3">
