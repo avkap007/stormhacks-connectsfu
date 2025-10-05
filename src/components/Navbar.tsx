@@ -28,7 +28,7 @@ export default function Navbar() {
                   loading="lazy"
                 />
             </span>
-            <span className="text-xl font-bold text-chinese-blue">ConnectSFU</span>
+            <span className="text-xl font-bold text-chinese-blue">connectSFU</span>
           </motion.div>
         </Link>
 
