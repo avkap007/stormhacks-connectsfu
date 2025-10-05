@@ -35,36 +35,6 @@ export default function Home() {
       <main className="bg-white">
         <div className="absolute inset-0 pattern-dots pattern-blue-500 pattern-bg-grey pattern-size-6 pattern-opacity-20 z-0" />
         {/* Hero (screen 1) */}
-<<<<<<< HEAD
-        <section className="snap-start min-h-[100svh] flex items-center">
-          <div className="mx-auto w-full max-w-screen-xl px-6 sm:px-10 lg:px-16 py-16 sm:py-20">
-            <h1 className="text-5xl sm:text-6xl font-bold text-chinese-blue flex flex-wrap items-center justify-center text-center leading-tight">
-              Explore clubs
-              <img
-                src="/assets/star_landingpage.gif"
-                alt="plan"
-                className="inline-block w-20 h-20 sm:w-24 sm:h-24 object-contain align-middle"
-              />
-              Find new friends
-              <img
-                src="/assets/blob_landingpage.gif"
-                alt="step"
-                className="inline-block w-20 h-20 sm:w-24 sm:h-24 object-contain align-middle"
-              />
-              Make SFU more than classes
-              <img
-                src="/assets/note_landingpage.gif"
-                alt="done"
-                className="inline-block w-20 h-20 sm:w-24 sm:h-24 object-contain align-middle"
-              />
-            </h1>
-            <div className="text-center max-w-3xl mx-auto">
-              <p className="text-lg sm:text-xl text-gray-600 mb-12">
-                Find events, make friends, and discover your SFU community! Never go to an event alone again.
-              </p>
-              <div className="w-full max-w-md mx-auto mb-10">
-                <div className="flex items-center bg-white border border-gray-300 rounded-full shadow-md px-4 py-2.5 focus-within:ring-2 focus-within:ring-chinese-blue/30 transition">
-=======
         <section className="snap-start min-h-[90svh] flex items-center bg-white">
           <div className="container mx-auto px-6 sm:px-8 py-12 sm:py-16 w-full">
             <div className="text-center max-w-3xl mx-auto">
@@ -81,7 +51,6 @@ export default function Home() {
               {/* Search Input */}
               <div className="w-full max-w-2xl mx-auto mb-10">
                 <div className="flex items-center bg-white border border-gray-300 rounded-full shadow-md px-5 py-3 focus-within:ring-2 focus-within:ring-chinese-blue/30 transition">
->>>>>>> ebb5b05 (changing page spacing)
                   <input
                     type="text"
                     placeholder="Search events, clubs, or people..."
