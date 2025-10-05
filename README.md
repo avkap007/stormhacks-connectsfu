@@ -1,6 +1,6 @@
 # ConnectSFU 🎉
 
-A cute portal for SFU students to discover events, RSVP, and find buddies!
+A portal for SFU students to discover events, RSVP, find buddies, and explore SFSS clubs!
 
 ## 🎨 Design Reference
 **[Figma Design System](https://www.figma.com/board/hfFDwt7qYfifoUAj9weiaC/components---layout?node-id=7-92&t=tvEXBj1mIJOZmXXs-0)**
@@ -16,21 +16,6 @@ npm install
 # 2. Start development
 npm run dev
 # Open http://localhost:3000
-```
-
-## 👥 Team Workflow
-
-```bash
-# Create feature branch
-git checkout -b feature/your-feature-name
-
-# Work and test
-npm run dev
-
-# Commit and push
-git add .
-git commit -m "Add: your feature description"
-git push origin feature/your-feature-name
 ```
 
 ## 📋 Commit Messages
@@ -49,7 +34,7 @@ git push origin feature/your-feature-name
 ## ✅ Current Status
 - ✅ Glass navbar with ConnectSFU branding
 - ✅ Beautiful event card with hover effects
-- ✅ Custom color palette (Chinese Blue, Ceil, Pearly Purple, etc.)
+- ✅ Custom color palette (Chinese Blue, Ceil, Pearly Purple, Pastels.)
 - ✅ Responsive design
 
 ## 🎯 Next Steps
