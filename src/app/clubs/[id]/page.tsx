@@ -105,13 +105,13 @@ export default function ClubDetailPage() {
           </Link>
 
           {/* Hero Section */}
-          <div className="bg-gradient-to-br from-white/40 via-white/30 to-white/20 backdrop-blur-lg rounded-3xl shadow-2xl border border-white/40 overflow-hidden mb-8">
+          <div className="bg-gradient-to-br from-white/40 via-white/30 to-white/20 backdrop-blur-lg rounded-3xl border border-white/40 overflow-hidden mb-8 shadow-sm">
             <div className="p-8 md:p-12">
               <div className="flex flex-col md:flex-row items-start gap-8">
                 
                 {/* Club Logo */}
                 <div className="relative flex-shrink-0">
-                  <div className="w-32 h-32 bg-gradient-to-br from-chinese-blue via-ceil to-pearly-purple rounded-3xl flex items-center justify-center overflow-hidden shadow-2xl">
+                  <div className="w-32 h-32 bg-gradient-to-br from-chinese-blue via-ceil to-pearly-purple rounded-3xl flex items-center justify-center overflow-hidden">
                     <img 
                       src={club.logo} 
                       alt={club.name} 
@@ -145,10 +145,10 @@ export default function ClubDetailPage() {
                   {/* Subscribe Button */}
                   <button
                     onClick={() => setIsSubscribed(!isSubscribed)}
-                    className={`relative px-8 py-4 rounded-xl font-bold text-lg shadow-xl overflow-hidden transition-all duration-300 ${
+                    className={`relative px-8 py-4 rounded-xl font-bold text-lg overflow-hidden transition-all duration-300 ${
                       isSubscribed
                         ? 'bg-gradient-to-r from-green-500 to-green-600 text-white'
-                        : 'bg-gradient-to-r from-chinese-blue to-ceil text-white hover:shadow-2xl'
+                        : 'bg-gradient-to-r from-chinese-blue to-ceil text-white'
                     }`}
                   >
                     <span className="relative z-10 flex items-center gap-2">
@@ -181,7 +181,7 @@ export default function ClubDetailPage() {
           <div className="grid md:grid-cols-2 gap-8 mb-8">
             
             {/* Contact Details */}
-            <div className="bg-gradient-to-br from-white/40 via-white/30 to-white/20 backdrop-blur-lg rounded-3xl shadow-xl border border-white/40 p-8">
+            <div className="bg-gradient-to-br from-white/40 via-white/30 to-white/20 backdrop-blur-lg rounded-3xl border border-white/40 p-8 shadow-sm">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-12 h-12 bg-gradient-to-br from-chinese-blue to-ceil rounded-xl flex items-center justify-center">
                   <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -223,7 +223,7 @@ export default function ClubDetailPage() {
             </div>
 
             {/* Website */}
-            <div className="bg-gradient-to-br from-white/40 via-white/30 to-white/20 backdrop-blur-lg rounded-3xl shadow-xl border border-white/40 p-8">
+            <div className="bg-gradient-to-br from-white/40 via-white/30 to-white/20 backdrop-blur-lg rounded-3xl border border-white/40 p-8 shadow-sm">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-12 h-12 bg-gradient-to-br from-chinese-blue to-ceil rounded-xl flex items-center justify-center">
                   <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -269,7 +269,7 @@ export default function ClubDetailPage() {
           </div>
 
           {/* Upcoming Events Placeholder */}
-          <div className="bg-gradient-to-br from-white/40 via-white/30 to-white/20 backdrop-blur-lg rounded-3xl shadow-xl border border-white/40 p-8">
+          <div className="bg-gradient-to-br from-white/40 via-white/30 to-white/20 backdrop-blur-lg rounded-3xl border border-white/40 p-8 shadow-sm">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-12 h-12 bg-gradient-to-br from-chinese-blue to-ceil rounded-xl flex items-center justify-center">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
