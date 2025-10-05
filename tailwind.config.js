@@ -14,6 +14,9 @@ module.exports = {
         'dessert-sand': '#E2C99E',
         'antique-ruby': '#852736',
       },
+      fontFamily: {
+        sans: ["var(--font-roboto)", "sans-serif"],
+      },
     },
   },
   plugins: [require("daisyui")],
