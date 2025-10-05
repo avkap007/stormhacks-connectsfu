@@ -5,16 +5,18 @@ import { useState } from "react";
 
 interface FiltersDrawerProps {
   onClose: () => void;
+  onApplyFilters: (campuses: string[], categories: string[], date: string) => void;
 }
 
-export default function FiltersDrawer({ onClose }: FiltersDrawerProps) {
+export default function FiltersDrawer({ onClose, onApplyFilters }: FiltersDrawerProps) {
   const [selectedCampus, setSelectedCampus] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string[]>([]);
-  const [dateRange, setDateRange] = useState<string>('all');
+  const [dateRange, setDateRange] = useState<string>('');
   const [freeOnly, setFreeOnly] = useState(false);
 
   const campuses = ['Burnaby', 'Surrey', 'Vancouver', 'Off-campus'];
   const categories = ['Technology', 'Business', 'Networking', 'Health & Wellness', 'Cultural', 'Career', 'Environment'];
+  const dateOptions = ['Today', 'Tomorrow', 'This weekend', 'Next week', 'This month', 'All dates'];
 
   const toggleCampus = (campus: string) => {
     setSelectedCampus(prev => 
@@ -33,15 +35,18 @@ export default function FiltersDrawer({ onClose }: FiltersDrawerProps) {
   };
 
   const applyFilters = () => {
-    // TODO: Implement filter logic
+    // Pass the selected filters to the parent component
+    onApplyFilters(selectedCampus, selectedCategory, dateRange);
     onClose();
   };
 
   const clearFilters = () => {
     setSelectedCampus([]);
     setSelectedCategory([]);
-    setDateRange('all');
+    setDateRange('');
     setFreeOnly(false);
+    // Also clear parent filters
+    onApplyFilters([], [], '');
   };
 
   return (
@@ -103,13 +108,13 @@ export default function FiltersDrawer({ onClose }: FiltersDrawerProps) {
         <div>
           <h4 className="font-semibold text-chinese-blue mb-3">Date</h4>
           <div className="space-y-2">
-            {['Today', 'Tomorrow', 'This weekend', 'Next week', 'This month', 'All dates'].map((date) => (
+            {dateOptions.map((date) => (
               <label key={date} className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="radio"
                   name="dateRange"
-                  value={date.toLowerCase().replace(' ', '_')}
-                  checked={dateRange === date.toLowerCase().replace(' ', '_')}
+                  value={date}
+                  checked={dateRange === date}
                   onChange={(e) => setDateRange(e.target.value)}
                   className="w-4 h-4 text-chinese-blue focus:ring-chinese-blue/50"
                 />
