@@ -4,9 +4,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Event } from "@/lib/supabase";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import AuthModal from "./AuthModal";
 import { createRSVP, sendConfirmationEmail } from "@/lib/supabase";
 import { supabase } from "@/lib/supabaseClient";
+import BuddyMatchModal from "./BuddyMatchModal";
 
 interface EventModalProps {
   event: Event | null;
@@ -15,8 +15,7 @@ interface EventModalProps {
 }
 
 export default function EventModal({ event, isOpen, onClose }: EventModalProps) {
-  const { user } = useAuth();
-  const [showAuthModal, setShowAuthModal] = useState(false);
+  const { user, setShowAuthModal } = useAuth();
   const [rsvpData, setRsvpData] = useState({
     name: user?.user_metadata?.name || '',
     email: user?.email || '',
@@ -30,6 +29,7 @@ export default function EventModal({ event, isOpen, onClose }: EventModalProps) 
   const [reminder24h, setReminder24h] = useState(false);
   const [reminder2h, setReminder2h] = useState(false);
   const [calendarFeedback, setCalendarFeedback] = useState('');
+  const [showBuddyModal, setShowBuddyModal] = useState(false);
 
   if (!event) return null;
 
@@ -52,16 +52,25 @@ export default function EventModal({ event, isOpen, onClose }: EventModalProps) 
         if (!event) return;
 
         try {
+          // Get the current session token
+          const { data: { session } } = await supabase.auth.getSession();
+          if (!session) {
+            setCalendarFeedback('❌ Please log in to RSVP for events.');
+            setTimeout(() => setCalendarFeedback(''), 3000);
+            return;
+          }
+
           // Create RSVP in database with all the form data
           const response = await fetch('/api/rsvp', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': `Bearer ${session.access_token}`,
             },
             body: JSON.stringify({
               eventId: event.id,
-              name: rsvpData.name || 'Demo User',
-              email: rsvpData.email || 'demo@sfu.ca',
+              name: rsvpData.name || user?.user_metadata?.name || 'User',
+              email: rsvpData.email || user?.email || 'user@sfu.ca',
               phone: rsvpData.phone,
               dietaryRestrictions: rsvpData.dietaryRestrictions,
               emergencyContact: rsvpData.emergencyContact,
@@ -414,40 +423,42 @@ export default function EventModal({ event, isOpen, onClose }: EventModalProps) 
                         </label>
                       </div>
 
-                      {/* Calendar Options */}
-                      <div className="pt-4 border-t">
-                        <p className="text-sm font-medium text-gray-700 mb-3">Add to Calendar</p>
+                      {/* Action Buttons */}
+                      <div className="pt-4 border-t space-y-3">
+                        {/* Calendar feedback */}
                         {calendarFeedback && (
-                          <div className="mb-3 p-2 bg-dessert-sand/20 text-dessert-sand border border-dessert-sand/30 rounded-lg text-xs text-center">
+                          <div className="p-2 bg-dessert-sand/20 text-dessert-sand border border-dessert-sand/30 rounded-lg text-xs text-center">
                             {calendarFeedback}
                           </div>
                         )}
+
+                        {/* RSVP and Calendar buttons side by side */}
                         <div className="flex gap-2">
+                          <button
+                            type="submit"
+                            className="flex-1 px-4 py-2 bg-chinese-blue text-white rounded-lg hover:bg-ceil transition-colors font-medium text-sm"
+                          >
+                            RSVP
+                          </button>
                           <a
                             href={getGoogleCalendarUrl()}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex-1 px-3 py-2 bg-chinese-blue text-white rounded-lg hover:bg-ceil transition-colors text-sm text-center"
+                            className="flex-1 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-medium text-sm text-center"
                           >
-                            📅 Google Calendar
+                            GCal Link
                           </a>
-                          <button
-                            type="button"
-                            onClick={generateICS}
-                            className="flex-1 px-3 py-2 bg-pearly-purple text-white rounded-lg hover:bg-pearly-purple/80 transition-colors text-sm"
-                          >
-                            📥 Download .ics
-                          </button>
                         </div>
-                      </div>
 
-                      {/* Submit Button */}
-                      <button
-                        type="submit"
-                        className="w-full mt-6 px-6 py-3 bg-chinese-blue text-white rounded-lg hover:bg-ceil transition-colors font-medium"
-                      >
-                        RSVP to Event
-                      </button>
+                        {/* Find Buddy Button - Full width below */}
+                        <button
+                          type="button"
+                          onClick={() => setShowBuddyModal(true)}
+                          className="w-full px-4 py-2 bg-pearly-purple text-white rounded-lg hover:bg-pearly-purple/80 transition-colors font-medium text-sm"
+                        >
+                          🤝 Find a Buddy
+                        </button>
+                      </div>
                     </form>
                   </div>
                 )}
@@ -457,11 +468,16 @@ export default function EventModal({ event, isOpen, onClose }: EventModalProps) 
         </div>
       )}
 
-      {/* Auth Modal */}
-      <AuthModal
-        isOpen={showAuthModal}
-        onClose={() => setShowAuthModal(false)}
-      />
+      {/* Buddy Match Modal */}
+      {showBuddyModal && (
+        <BuddyMatchModal
+          key="buddy-modal"
+          isOpen={showBuddyModal}
+          onClose={() => setShowBuddyModal(false)}
+          eventId={event.id}
+          eventTitle={event.title}
+        />
+      )}
     </AnimatePresence>
   );
 }
