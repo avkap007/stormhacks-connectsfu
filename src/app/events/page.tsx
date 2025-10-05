@@ -224,15 +224,6 @@ export default function EventsPage() {
     return true;
   });
 
-  console.log('Debug - Total events:', events.length);
-  console.log('Debug - Filtered events:', filteredEvents.length);
-  console.log('Debug - Selected categories:', selectedCategories);
-  console.log('Debug - Search query:', searchQuery);
-  console.log('Debug - First event:', events[0]);
-  console.log('Debug - All event categories:', events.map(e => e.category));
-
-  
-
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-ceil/10 via-pearly-purple/5 to-dessert-sand/10">
