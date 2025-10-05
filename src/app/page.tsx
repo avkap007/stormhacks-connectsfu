@@ -84,9 +84,9 @@ export default function Home() {
   ];
 
   const clubs: Club[] = [
-    { id: "gdsc",     name: "GDSC SFU",              tagline: "Empowering students through technologies and community.", emoji: "💡", href: "#" },
-    { id: "design",   name: "Design Club",           tagline: "Where creativity meets purpose — learn UI/UX and collaborate.", emoji: "🎨", href: "#" },
-    { id: "ai",       name: "AI Society",            tagline: "Workshops, projects, and talks on AI, ML, and data science.", emoji: "🤖", href: "#" },
+    { id: "treehouse",   name: "treehouse",           tagline: "A welcoming creative space where makers and dreamers bring side quests to life.", imageUrl: "/assets/treehouse.png", href: "#" },
+    { id: "blueprint",     name: "SFU Blueprint",              tagline: "Building innovative tech solutions that create social impact for nonprofits.", imageUrl: "/assets/blueprint.png", href: "#" },
+    { id: "wlf",       name: "Work, Life, Food Garden",            tagline: "Engineering real-world solutions for food security and sustainable development.", imageUrl: "assets/wlf.png", href: "#" },
     { id: "film",     name: "Film & Media Society",  tagline: "Create, shoot, and share your visual stories.", emoji: "🎬", href: "#" },
     { id: "wellness", name: "Wellness Warriors",     tagline: "Mindfulness, meditation, and stress-relief weekly.", emoji: "🧘", href: "#" },
   ];
