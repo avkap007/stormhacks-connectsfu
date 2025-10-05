@@ -4,12 +4,10 @@ import Link from "next/link";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
-import AuthModal from "./AuthModal";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [showAuthModal, setShowAuthModal] = useState(false);
-  const { user, signOut } = useAuth();
+  const { user, signOut, setShowAuthModal } = useAuth();
 
   return (
     <header className="fixed top-0 left-0 w-full bg-white text-chinese-blue z-50">
@@ -54,8 +52,14 @@ export default function Navbar() {
         <div className="flex items-center space-x-4">
           {user ? (
             <div className="flex items-center gap-3">
-              <span className="text-sm text-chinese-blue hidden md:inline">
-                {user.email}
+              <Link 
+                href="/profile"
+                className="text-sm text-chinese-blue hidden md:inline hover:text-ceil transition-colors"
+              >
+                Profile
+              </Link>
+              <span className="text-sm text-gray-600 hidden md:inline">
+                {user.user_metadata?.name || user.email?.split('@')[0]}
               </span>
               <motion.button
                 whileHover={{ scale: 1.05 }}
@@ -114,9 +118,21 @@ export default function Navbar() {
             </Link>
 
             {user ? (
-              <button onClick={signOut} className="mt-4 px-6 py-2 rounded-full text-sm font-medium bg-pearly-purple text-white hover:bg-pearly-purple/80 transition-colors">
-                Sign Out
-              </button>
+              <div className="mt-4 space-y-3">
+                <Link 
+                  href="/profile"
+                  onClick={() => setIsOpen(false)}
+                  className="block px-6 py-2 rounded-full text-sm font-medium bg-chinese-blue text-white hover:bg-ceil transition-colors text-center"
+                >
+                  Profile
+                </Link>
+                <button 
+                  onClick={signOut}
+                  className="w-full px-6 py-2 rounded-full text-sm font-medium bg-pearly-purple text-white hover:bg-pearly-purple/80 transition-colors"
+                >
+                  Sign Out
+                </button>
+              </div>
             ) : (
               <button onClick={() => setShowAuthModal(true)} className="mt-4 px-6 py-2 rounded-full text-sm font-medium bg-chinese-blue text-white hover:bg-ceil transition-colors">
                 Login

@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { Roboto } from "next/font/google";
+import AuthModalWrapper from '@/components/AuthModalWrapper';
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -27,6 +28,7 @@ export default function RootLayout({
       <body className="font-sans lg:snap-y lg:snap-mandatory">
         <AuthProvider>
           {children}
+          <AuthModalWrapper />
         </AuthProvider>
       </body>
     </html>

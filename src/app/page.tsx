@@ -1,9 +1,69 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Carousel, { type CarouselItem } from "@/components/FramerAutoCarousel";
 import TrendingCategories, { type Category } from "@/components/TrendingCategories";
 import NewClubsSpotlight, { type Club } from "@/components/NewClubsSpotlight";
+import { parseNaturalLanguageQuery } from "@/lib/geminiSearch";
 
 export default function Home() {
+  const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchLoading, setSearchLoading] = useState(false);
+
+  // Debug: Check if API key is loaded
+  useEffect(() => {
+    console.log('Home page mounted');
+    console.log('API Key available:', !!process.env.NEXT_PUBLIC_GEMINI_API_KEY);
+    console.log('API Key preview:', process.env.NEXT_PUBLIC_GEMINI_API_KEY?.substring(0, 10) + '...');
+    console.log('Search loading state:', searchLoading);
+  }, [searchLoading]);
+
+  const handleSearch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!searchQuery.trim()) return;
+
+    setSearchLoading(true);
+    try {
+      // Use Gemini to parse the natural language query
+      const filters = await parseNaturalLanguageQuery(searchQuery);
+      
+      console.log('Filters from Gemini:', filters);
+      
+      // Build URL params from filters
+      const params = new URLSearchParams();
+      
+      if (filters.categories && filters.categories.length > 0) {
+        params.append('categories', filters.categories.join(','));
+      }
+      if (filters.campuses && filters.campuses.length > 0) {
+        params.append('campuses', filters.campuses.join(','));
+      }
+      if (filters.dateRange) {
+        params.append('date', filters.dateRange);
+      }
+      if (filters.keywords && filters.keywords.length > 0) {
+        params.append('q', filters.keywords.join(' '));
+      }
+      
+      const targetUrl = `/events?${params.toString()}`;
+      console.log('Redirecting to:', targetUrl);
+      
+      // Navigate to events page with filters
+      router.push(targetUrl);
+      
+    } catch (error) {
+      console.error('Error with search:', error);
+      // Fallback to simple search
+      router.push(`/events?q=${encodeURIComponent(searchQuery)}`);
+    } finally {
+      setSearchLoading(false);
+    }
+  };
+
   const demoItems: CarouselItem[] = [
     { id: 1,  title: "Web Development Workshop", subtitle: "Learn React, Next.js, and modern practices. Perfect for beginners!", imageUrl: "/assets/tech_fair.jpg", badge: "GDSC SFU", ctaText: "RSVP", ctaHref: "#" },
     { id: 2,  title: "Hack Night @ Burnaby",      subtitle: "Pair up, ship something fun, meet new friends!", imageUrl: "/assets/enactus.png", badge: "ConnectSFU", ctaText: "RSVP", ctaHref: "#" },
@@ -15,10 +75,10 @@ export default function Home() {
 
   const categories: Category[] = [
     { id: "getcracked", label: "Get Cracked", href: "/events?category=Community", gif: "/assets/getcracked.gif" },
-    { id: "closeknit",  label: "Close Knit",   href: "/events?category=Social",    gif: "/assets/closeknit.gif" },
-    { id: "funsies",    label: "Funsies",      href: "/events?category=Friends",   gif: "/assets/funsies.gif" },
-    { id: "getcrafty",  label: "Get Crafty",   href: "/events?category=Arts",      gif: "/assets/getcrafty.gif" },
-    { id: "schmooze",   label: "Schmooze",     href: "/events?category=LevelUp",   gif: "/assets/schmooze.gif" },
+    { id: "closeknit", label: "Close Knit", href: "/events?category=Social", gif: "/assets/closeknit.gif" },
+    { id: "funsies", label: "Funsies", href: "/events?category=Friends", gif: "/assets/funsies.gif" },
+    { id: "getcrafty", label: "Get Crafty", href: "/events?category=Arts", gif: "/assets/getcrafty.gif" },
+    { id: "schmooze", label: "Schmooze", href: "/events?category=LevelUp", gif: "/assets/schmooze.gif" },
   ];
 
   const clubs: Club[] = [
@@ -48,21 +108,36 @@ export default function Home() {
                 Find events, make friends, and discover your SFU community! Never go to an event alone again.
               </p>
 
-              {/* Search Input */}
-              <div className="w-full max-w-2xl mx-auto mb-10">
-                <div className="flex items-center bg-white border border-gray-300 rounded-full shadow-md px-5 py-3 focus-within:ring-2 focus-within:ring-chinese-blue/30 transition">
+              {/* Search Input with Gemini */}
+              <form onSubmit={handleSearch} className="w-full max-w-2xl mx-auto mb-12 relative z-10">
+                <div className="flex items-center bg-white border border-gray-300 rounded-full shadow-md px-5 py-3 focus-within:ring-2 focus-within:ring-chinese-blue/30 transition relative z-10">
                   <input
                     type="text"
-                    placeholder="Search events, clubs, or people..."
-                    className="flex-1 bg-transparent outline-none text-gray-800 placeholder-gray-400 px-2 text-sm sm:text-base"
+                    value={searchQuery}
+                    onClick={() => console.log('Landing page input clicked')}
+                    onFocus={() => console.log('Landing page input focused')}
+                    onChange={(e) => {
+                      console.log('Landing page input changed:', e.target.value);
+                      setSearchQuery(e.target.value);
+                    }}
+                    placeholder="Try: 'tech events next week' or 'business networking in Burnaby'"
+                    className="flex-1 bg-transparent outline-none text-gray-800 placeholder-gray-400 px-2 text-base sm:text-lg cursor-text"
+                    style={{ pointerEvents: 'auto', zIndex: 999 }}
+                    disabled={false}
+                    autoComplete="off"
                   />
                   <button
-                    className="ml-2 bg-chinese-blue hover:bg-ceil text-white font-medium px-5 py-1.5 rounded-full transition-all duration-200"
+                    type="submit"
+                    disabled={searchLoading}
+                    className="ml-3 bg-chinese-blue hover:bg-ceil text-white font-medium px-6 py-2 rounded-full transition-all duration-200 disabled:opacity-50"
                   >
-                    Search
+                    {searchLoading ? 'Searching...' : 'Search'}
                   </button>
                 </div>
-              </div>
+                <p className="text-sm text-gray-500 mt-3">
+                  Powered by AI - search naturally like you're talking to a friend
+                </p>
+              </form>
             </div>
             {/* image */}
             <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -98,7 +173,7 @@ export default function Home() {
             <h2 className="text-3xl sm:text-4xl font-bold text-chinese-blue mb-6">
               Featured Events
             </h2>
-            {/* extra wrapper so cards don’t touch sides on huge screens */}
+            {/* extra wrapper so cards don't touch sides on huge screens */}
             <div className="mx-auto max-w-[1200px]">
               <Carousel items={demoItems} autoPlayMs={3200} />
             </div>
