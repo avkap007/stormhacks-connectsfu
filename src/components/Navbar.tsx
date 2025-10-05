@@ -142,8 +142,6 @@ export default function Navbar() {
         </motion.div>
       )}
 
-      {/* Auth Modal */}
-      <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
     </header>
   );
 }

@@ -46,3 +46,16 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+/* Simple marquee animation */
+@keyframes marquee-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.marquee {
+  white-space: nowrap;
+  display: flex;
+  gap: 2rem;
+  animation: marquee-scroll 18s linear infinite;
+}

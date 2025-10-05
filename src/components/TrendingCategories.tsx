@@ -14,12 +14,14 @@ type Props = {
   categories: Category[];
   className?: string;
   title?: string;
+  subtitle?: string;
 };
 
 export default function TrendingCategories({
   categories,
   className = "",
   title = "Trending Categories",
+  subtitle,
 }: Props) {
   const cats = categories.slice(0, 5);
 
@@ -41,19 +43,24 @@ export default function TrendingCategories({
 
   return (
     <section className={className}>
-      <h2 className="text-3xl sm:text-4xl font-bold text-chinese-blue mb-6">
+      <h2 className="text-3xl sm:text-4xl font-bold text-chinese-blue mb-2 lowercase">
         {title}
       </h2>
+      {subtitle && (
+        <p className="text-sm text-gray-600 mb-6">{subtitle}</p>
+      )}
 
-      <div
-        className="
-          grid grid-flow-col-dense
-          grid-cols-1 sm:grid-cols-2 lg:grid-cols-3
-          gap-4 sm:gap-6
-          auto-rows-[240px] sm:auto-rows-[260px] lg:auto-rows-[280px]
-          rounded-3xl p-3 sm:p-4
-        "
-      >
+      {/* Constrain inner grid width similar to Featured Events */}
+      <div className="mx-auto max-w-[1200px]">
+        <div
+          className="
+            grid grid-flow-col-dense
+            grid-cols-1 sm:grid-cols-2 lg:grid-cols-3
+            gap-4 sm:gap-6
+            auto-rows-[240px] sm:auto-rows-[260px] lg:auto-rows-[280px]
+            rounded-3xl p-3 sm:p-4
+          "
+        >
         {reorderForDesktop(cats).map((cat) => {
           const i = (cat as any)._originalIndex as number;
           const color = pastel[i] ?? "bg-gray-100";
@@ -98,6 +105,7 @@ export default function TrendingCategories({
             </a>
           );
         })}
+        </div>
       </div>
     </section>
   );

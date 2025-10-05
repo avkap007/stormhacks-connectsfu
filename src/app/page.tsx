@@ -93,14 +93,31 @@ export default function Home() {
     <>
       <Navbar />
       <main className="bg-white">
+        {/* Top marquee under navbar */}
+        <div className="w-full bg-black text-white overflow-hidden mt-16 relative z-40">
+          <div className="mx-auto w-full max-w-screen-xl px-6 sm:px-10 lg:px-16">
+            <div className="marquee py-2 text-[13px] sm:text-sm font-medium tracking-wide lowercase">
+              <span className="opacity-90">8 new events added this week • </span>
+              <span className="opacity-90">this week at surge: performative male context • </span>
+              <span className="opacity-90">wics event: network so you aren't jobless • </span>
+              <span className="opacity-90">new gardening club added • </span>
+              <span className="opacity-90">sfu blueprint hiring • </span>
+              <span className="opacity-90">8 new events added this week • </span>
+              <span className="opacity-90">this week at surge: performative male context • </span>
+              <span className="opacity-90">wics event: network so you aren't jobless • </span>
+              <span className="opacity-90">new gardening club added • </span>
+              <span className="opacity-90">sfu blueprint hiring • </span>
+            </div>
+          </div>
+        </div>
         <div className="absolute inset-0 pattern-dots pattern-blue-500 pattern-bg-grey pattern-size-6 pattern-opacity-20 z-0" />
         {/* Hero (screen 1) */}
-        <section className="snap-start min-h-[90svh] flex items-center bg-white">
-          <div className="container mx-auto px-6 sm:px-8 py-12 sm:py-16 w-full">
+        <section className="snap-start min-h-[100svh] flex items-center bg-white pt-20 sm:pt-24">
+          <div className="container mx-auto px-6 sm:px-8 py-8 sm:py-12 w-full">
             <div className="text-center max-w-3xl mx-auto">
               {/* Title */}
-              <h1 className="text-5xl sm:text-6xl font-bold text-chinese-blue mb-5">
-                Welcome to ConnectSFU
+              <h1 className="text-5xl sm:text-6xl font-bold text-chinese-blue mb-5 lowercase">
+                welcome to connectsfu
               </h1>
 
               {/* Subtitle */}
@@ -140,9 +157,9 @@ export default function Home() {
               </form>
             </div>
             {/* image */}
-            <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Left image */}
-              <div className="relative w-full overflow-hidden rounded-2xl">
+              <div className="relative w-full overflow-hidden rounded-2xl -mt-16 sm:-mt-20">
                 <img
                   src="/assets/mascot_blue.gif"   
                   alt="Students collaborating"
@@ -152,7 +169,7 @@ export default function Home() {
               </div>
 
               {/* Right image */}
-              <div className="flex justify-end mt-6">
+              <div className="flex justify-end -mt-16 sm:-mt-20">
                 <div className="relative overflow-hidden rounded-2xl">
                   <img
                     src="/assets/mascot_orange.gif"
@@ -170,9 +187,10 @@ export default function Home() {
         {/* Featured Events (screen 2) */}
         <section className="snap-start min-h-[100svh] flex items-center">
           <div className="mx-auto w-full max-w-screen-xl px-6 sm:px-10 lg:px-16 py-12">
-            <h2 className="text-3xl sm:text-4xl font-bold text-chinese-blue mb-6">
-              Featured Events
+            <h2 className="text-3xl sm:text-4xl font-bold text-chinese-blue mb-2 lowercase">
+              featured events
             </h2>
+            <p className="text-sm text-gray-600 mb-6">events that are popular this week — click to learn more</p>
             {/* extra wrapper so cards don't touch sides on huge screens */}
             <div className="mx-auto max-w-[1200px]">
               <Carousel items={demoItems} autoPlayMs={3200} />
@@ -180,27 +198,27 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Featured Events (screen 2) */}
-        <section className="snap-start min-h-[90svh] flex items-center">
-          <div className="container mx-auto px-4 py-8 sm:py-10 w-full">
-            <h2 className="text-2xl sm:text-3xl font-bold text-chinese-blue mb-4 sm:mb-5 text-center">
-              Featured Events
-            </h2>
-            <Carousel items={demoItems} autoPlayMs={3200} />
-          </div>
-        </section>
+        {/* Removed duplicate Featured Events section */}
 
         {/* Trending Categories (screen 3) */}
-        <section className="snap-start min-h-[90svh] flex items-center">
-          <div className="container mx-auto px-4 py-8 sm:py-10 w-full">
-            <TrendingCategories categories={categories} className="mt-4" />
+        <section className="snap-start min-h-[100svh] flex items-center">
+          <div className="mx-auto w-full max-w-screen-xl px-6 sm:px-10 lg:px-16 py-12">
+            <TrendingCategories 
+              categories={categories}
+              title="trending categories"
+              subtitle="your peers seem to love events in these categories"
+            />
           </div>
         </section>
 
         {/* New Clubs Spotlight (screen 4) */}
         <section className="snap-start min-h-[90svh] flex items-center">
-          <div className="container mx-auto px-4 py-8 sm:py-10 w-full">
-            <NewClubsSpotlight clubs={clubs} />
+          <div className="mx-auto w-full max-w-screen-xl px-6 sm:px-10 lg:px-16 py-12">
+            <NewClubsSpotlight 
+              clubs={clubs} 
+              title="new clubs spotlight"
+              subtitle="new orgs on campus this month — show up to their events to show some love"
+            />
           </div>
         </section>
 

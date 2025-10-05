@@ -16,19 +16,26 @@ export default function NewClubsSpotlight({
   clubs,
   title = "New Clubs Spotlight",
   className = "",
+  subtitle,
 }: {
   clubs: Club[];
   title?: string;
   className?: string;
+  subtitle?: string;
 }) {
   return (
     <section className={`${className}`}>
-      <h2 className="text-3xl sm:text-4xl font-bold text-chinese-blue mb-8 text-center">
+      <h2 className="text-3xl sm:text-4xl font-bold text-chinese-blue mb-2 text-center lowercase">
         {title}
       </h2>
+      {subtitle && (
+        <p className="text-sm text-gray-600 mb-8 text-center">{subtitle}</p>
+      )}
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {clubs.map((club) => (
+      {/* Constrain width to align with other sections */}
+      <div className="mx-auto max-w-[1200px]">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {clubs.slice(0, 3).map((club) => (
           <motion.a
             key={club.id}
             href={club.href ?? "#"}
@@ -64,7 +71,8 @@ export default function NewClubsSpotlight({
               </button>
             </div>
           </motion.a>
-        ))}
+          ))}
+        </div>
       </div>
     </section>
   );
