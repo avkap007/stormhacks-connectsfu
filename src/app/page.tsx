@@ -27,6 +27,15 @@ type EventAPI = {
   } | null;
 };
 
+/** Fun label → Events filter categories mapping for Trending chips */
+const TREND_TO_FILTER: Record<string, string[]> = {
+  getcracked: ["Technology"],
+  funsies: ["Cultural"],
+  closeknit: ["Networking"],
+  getcrafty: ["Health & Wellness"],
+  schmooze: ["Business", "Career", "Networking"],
+};
+
 export default function Home() {
   const router = useRouter();
 
@@ -116,21 +125,37 @@ export default function Home() {
     }
   };
 
-  // your existing static blocks (categories/clubs)
+  /** Build href for Trending chip → /events with mapped categories */
+  const trendHref = (trendId: string) => {
+    const mapped = TREND_TO_FILTER[trendId] || [];
+    const params = new URLSearchParams();
+    if (mapped.length) params.set("categories", mapped.join(","));
+    return `/events?${params.toString()}`;
+  };
+
+  /** Build href for Clubs Spotlight → /clubs?q=<club-name>&category=<hint> */
+  const clubHref = (name: string, categoryHint?: string) => {
+    const params = new URLSearchParams();
+    params.set("q", name);
+    if (categoryHint) params.set("category", categoryHint);
+    return `/clubs?${params.toString()}`;
+  };
+
+  // your existing static blocks (categories/clubs) — now with deep links wired in
   const categories: Category[] = [
-    { id: "getcracked", label: "Get Cracked", href: "/events?category=Community", gif: "/assets/getcracked.gif" },
-    { id: "closeknit", label: "Close Knit", href: "/events?category=Social", gif: "/assets/closeknit.gif" },
-    { id: "funsies", label: "Funsies", href: "/events?category=Friends", gif: "/assets/funsies.gif" },
-    { id: "getcrafty", label: "Get Crafty", href: "/events?category=Arts", gif: "/assets/getcrafty.gif" },
-    { id: "schmooze", label: "Schmooze", href: "/events?category=LevelUp", gif: "/assets/schmooze.gif" },
+    { id: "getcracked", label: "Get Cracked", href: trendHref("getcracked"), gif: "/assets/getcracked.gif" },
+    { id: "closeknit", label: "Close Knit", href: trendHref("closeknit"), gif: "/assets/closeknit.gif" },
+    { id: "funsies", label: "Funsies", href: trendHref("funsies"), gif: "/assets/funsies.gif" },
+    { id: "getcrafty", label: "Get Crafty", href: trendHref("getcrafty"), gif: "/assets/getcrafty.gif" },
+    { id: "schmooze", label: "Schmooze", href: trendHref("schmooze"), gif: "/assets/schmooze.gif" },
   ];
 
   const clubs: Club[] = [
-    { id: "treehouse", name: "treehouse", tagline: "A welcoming creative space where makers and dreamers bring side quests to life.", imageUrl: "/assets/treehouse.png", href: "#" },
-    { id: "blueprint", name: "SFU Blueprint", tagline: "Building innovative tech solutions that create social impact for nonprofits.", imageUrl: "/assets/blueprint.png", href: "#" },
-    { id: "wlf", name: "Work, Life, Food Garden", tagline: "Engineering real-world solutions for food security and sustainable development.", imageUrl: "assets/wlf.png", href: "#" },
-    { id: "film", name: "Film & Media Society", tagline: "Create, shoot, and share your visual stories.", emoji: "🎬", href: "#" },
-    { id: "wellness", name: "Wellness Warriors", tagline: "Mindfulness, meditation, and stress-relief weekly.", emoji: "🧘", href: "#" },
+    { id: "treehouse", name: "treehouse", tagline: "A welcoming creative space where makers and dreamers bring side quests to life.", imageUrl: "/assets/treehouse.png", href: clubHref("treehouse", "Arts & Performance") },
+    { id: "blueprint", name: "SFU Blueprint", tagline: "Building innovative tech solutions that create social impact for nonprofits.", imageUrl: "/assets/blueprint.png", href: clubHref("SFU Blueprint", "Technology") },
+    { id: "wlf", name: "Work, Life, Food Garden", tagline: "Engineering real-world solutions for food security and sustainable development.", imageUrl: "assets/wlf.png", href: clubHref("Work, Life, Food Garden", "Environment") },
+    { id: "film", name: "Film & Media Society", tagline: "Create, shoot, and share your visual stories.", emoji: "🎬", href: clubHref("Film & Media Society", "Arts & Performance") },
+    { id: "wellness", name: "Wellness Warriors", tagline: "Mindfulness, meditation, and stress-relief weekly.", emoji: "🧘", href: clubHref("Wellness Warriors", "Health & Wellness") },
   ];
 
   return (
@@ -180,7 +205,6 @@ export default function Home() {
                   Find events, make friends, and discover your SFU community! Never go to an event alone again.
                 </p>
               </div>
-
 
               {/* Search Input with Gemini */}
               <form onSubmit={handleSearch} className="w-full max-w-2xl mx-auto mb-12 relative z-10">
@@ -264,7 +288,6 @@ export default function Home() {
             />
           </div>
         </section>
-
 
       </main>
     </>
