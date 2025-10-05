@@ -10,6 +10,7 @@ module.exports = {
       colors: {
         'chinese-blue': '#151517ff',
         'ceil': '#9792CB',
+        'blue': '#9bd3ee',
         'pearly-purple': '#AA74A0',
         'dessert-sand': '#E2C99E',
         'antique-ruby': '#852736',

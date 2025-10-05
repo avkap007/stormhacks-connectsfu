@@ -38,19 +38,21 @@ export default function Home() {
           <div className="mx-auto w-full max-w-screen-xl px-6 sm:px-10 lg:px-16 py-16 sm:py-20">
             <div className="text-center max-w-3xl mx-auto">
               <h1 className="text-5xl sm:text-6xl font-bold text-chinese-blue mb-6">
-                Welcome to ConnectSFU
+                Explore clubs Find new friends Make SFU more then classes
               </h1>
               <p className="text-lg sm:text-xl text-gray-600 mb-12">
                 Find events, make friends, and discover your SFU community! Never go to an event alone again.
               </p>
-              <div className="w-full max-w-2xl mx-auto mb-12">
-                <div className="flex items-center bg-white border border-gray-300 rounded-full shadow-md px-5 py-3 focus-within:ring-2 focus-within:ring-chinese-blue/30 transition">
+              <div className="w-full max-w-md mx-auto mb-10">
+                <div className="flex items-center bg-white border border-gray-300 rounded-full shadow-md px-4 py-2.5 focus-within:ring-2 focus-within:ring-chinese-blue/30 transition">
                   <input
                     type="text"
                     placeholder="Search events, clubs, or people..."
-                    className="flex-1 bg-transparent outline-none text-gray-800 placeholder-gray-400 px-2 text-base sm:text-lg"
+                    className="flex-1 bg-transparent outline-none text-gray-800 placeholder-gray-400 px-2 text-sm sm:text-base"
                   />
-                  <button className="ml-3 bg-chinese-blue hover:bg-ceil text-white font-medium px-6 py-2 rounded-full transition-all duration-200">
+                  <button
+                    className="ml-2 bg-chinese-blue hover:bg-ceil text-white font-medium px-5 py-1.5 rounded-full transition-all duration-200"
+                  >
                     Search
                   </button>
                 </div>
