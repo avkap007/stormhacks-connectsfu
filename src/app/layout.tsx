@@ -2,16 +2,16 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { AuthProvider } from '@/contexts/AuthContext'
-import { Roboto } from "next/font/google";
+import { IBM_Plex_Sans } from "next/font/google";
 import AuthModalWrapper from '@/components/AuthModalWrapper';
 
 const inter = Inter({ subsets: ['latin'] })
 
-const roboto = Roboto({
+const roboto = IBM_Plex_Sans({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "700"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-roboto",
-});
+})
 
 export const metadata: Metadata = {
   title: 'ConnectSFU - Find Your Campus Community',
