@@ -1,35 +1,15 @@
 import { ClubEvents } from "./types";
 
-export const gdscData: Record<string, ClubEvents> = {
-  "google-developer-student-club---sfu": {
+export const surgeData: Record<string, ClubEvents> = {
+  "sfu-surge": {
     upcoming: [
-      {
-        id: 1,
-        title: "Clubs Day",
-        date: "2026-01-08",
-        time: "11:00",
-        location: "Convocation Mall (Burnaby Campus)",
-        description: "Join us at SFU Clubs Day and see what GDSC SFU is all about. Drop by our booth to ask questions and connect with fellow tech enthusiasts!",
-        capacity: 60,
-        rsvps: 45,
-      },
-      {
-        id: 2,
-        title: "Google Cloud Platform Deep Dive",
-        date: "2025-10-25",
-        time: "18:30",
-        location: "TASC 1 9204",
-        description: "Explore GCP services including Compute Engine, Cloud Storage, and Cloud Functions.",
-        capacity: 40,
-        rsvps: 32,
-      }
     ],
     past: [
     {
         id: 1,
-        title: "Visit GDSC @ Clubs Day",
-        date: "2025-09-11",
-        poster: "/assets/gdsc/clubs-day.png",
+        title: "Career Discover Panel",
+        date: "2025-01-08",
+        poster: "/assets/surge/career-discover-panel.png",
         attendees: [
         { name: "Camille Ng", email: "cna52@sfu.ca", attended: true },
         { name: "Chloe Yip", email: "chloe_yip@sfu.ca", attended: true },
@@ -43,9 +23,9 @@ export const gdscData: Record<string, ClubEvents> = {
     },
       {
         id: 2,
-        title: "Resume & Portfolio Review Workshop",
-        date: "2025-07-18",
-        poster: "/assets/gdsc/resume-review.png",
+        title: "Crit Session",
+        date: "2025-01-25",
+        poster: "/assets/surge/crit-session.png",
         attendees: [
           { name: "Camille Ng", email: "cna52@sfu.ca", attended: true },
           { name: "Chloe Yip", email: "chloe_yip@sfu.ca", attended: true },
@@ -59,10 +39,22 @@ export const gdscData: Record<string, ClubEvents> = {
       },
       {
         id: 3,
-        title: "Hack the Sem Demo Day",
-        date: "2025-04-08",
-        poster: "/assets/gdsc/hack-sem.png",
+        title: "Journey Hacks",
+        date: "2024-02-02",
+        poster: "/assets/surge/journey-hacks.png",
         attendees: [
+          { name: "Camille Ng", email: "cna52@sfu.ca", attended: true },
+          { name: "Chloe Yip", email: "chloe_yip@sfu.ca", attended: true },
+          { name: "Avni Kapoor", email: "avni_kapoor@sfu.ca", attended: true },
+          { name: "Jessica Brown", email: "jbrown@sfu.ca", attended: false },
+          { name: "Camille Ng", email: "cna52@sfu.ca", attended: true },
+          { name: "Chloe Yip", email: "chloe_yip@sfu.ca", attended: true },
+          { name: "Avni Kapoor", email: "avni_kapoor@sfu.ca", attended: true },
+          { name: "Jessica Brown", email: "jbrown@sfu.ca", attended: false },
+          { name: "Camille Ng", email: "cna52@sfu.ca", attended: true },
+          { name: "Chloe Yip", email: "chloe_yip@sfu.ca", attended: true },
+          { name: "Avni Kapoor", email: "avni_kapoor@sfu.ca", attended: true },
+          { name: "Jessica Brown", email: "jbrown@sfu.ca", attended: false },
           { name: "Camille Ng", email: "cna52@sfu.ca", attended: true },
           { name: "Chloe Yip", email: "chloe_yip@sfu.ca", attended: true },
           { name: "Avni Kapoor", email: "avni_kapoor@sfu.ca", attended: true },
@@ -74,5 +66,5 @@ export const gdscData: Record<string, ClubEvents> = {
 };
 
 export function getClubEvents(clubId: string): ClubEvents {
-  return gdscData[clubId] || { upcoming: [], past: [] };
+  return surgeData[clubId] || { upcoming: [], past: [] };
 }

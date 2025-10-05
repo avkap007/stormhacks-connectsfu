@@ -5,7 +5,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { Download } from 'lucide-react';
-import { getClubEvents } from "../gdsc_data";
+import { clubEventsData } from "../data";
 
 type ClubRaw = {
   name: string;
@@ -72,9 +72,9 @@ export default function ClubDetailPage() {
   const club = clubsData.find((c: Club) => c.id === clubId);
 
   // Get club-specific events from the data file
-  const clubEvents = getClubEvents(clubId);
-  const [upcomingEvents] = useState(clubEvents.upcoming);
-  const [pastEvents] = useState(clubEvents.past);
+const clubEvents = clubEventsData[clubId] || { upcoming: [], past: [] };
+const [upcomingEvents] = useState(clubEvents.upcoming);
+const [pastEvents] = useState(clubEvents.past);
 
   // downloadAttendees function inside component
  const downloadAttendees = (event: any) => {

@@ -4,6 +4,8 @@ import Navbar from "@/components/Navbar";
 import { useState } from "react";
 import Link from "next/link";
 import clubsDataJson from "./club_list.json";
+import { clubEventsData } from "./data"; // make sure path is correct
+
 
 type ClubRaw = {
   name: string;
