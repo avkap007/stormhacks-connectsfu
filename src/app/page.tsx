@@ -95,30 +95,16 @@ export default function Home() {
       <main className="bg-white">
         <div className="absolute inset-0 pattern-dots pattern-blue-500 pattern-bg-grey pattern-size-6 pattern-opacity-20 z-0" />
         {/* Hero (screen 1) */}
-        <section className="snap-start min-h-[100svh] flex items-center">
-          <div className="mx-auto w-full max-w-screen-xl px-6 sm:px-10 lg:px-16 py-16 sm:py-20">
-            <h1 className="text-5xl sm:text-6xl font-bold text-chinese-blue flex flex-wrap items-center justify-center text-center leading-tight">
-              Explore clubs
-              <img
-                src="/assets/star_landingpage.gif"
-                alt="plan"
-                className="inline-block w-20 h-20 sm:w-24 sm:h-24 object-contain align-middle"
-              />
-              Find new friends
-              <img
-                src="/assets/blob_landingpage.gif"
-                alt="step"
-                className="inline-block w-20 h-20 sm:w-24 sm:h-24 object-contain align-middle"
-              />
-              Make SFU more than classes
-              <img
-                src="/assets/note_landingpage.gif"
-                alt="done"
-                className="inline-block w-20 h-20 sm:w-24 sm:h-24 object-contain align-middle"
-              />
-            </h1>
+        <section className="snap-start min-h-[90svh] flex items-center bg-white">
+          <div className="container mx-auto px-6 sm:px-8 py-12 sm:py-16 w-full">
             <div className="text-center max-w-3xl mx-auto">
-              <p className="text-lg sm:text-xl text-gray-600 mb-12">
+              {/* Title */}
+              <h1 className="text-5xl sm:text-6xl font-bold text-chinese-blue mb-5">
+                Welcome to ConnectSFU
+              </h1>
+
+              {/* Subtitle */}
+              <p className="text-lg sm:text-xl text-gray-600 mb-10">
                 Find events, make friends, and discover your SFU community! Never go to an event alone again.
               </p>
 
@@ -194,19 +180,31 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Featured Events (screen 2) */}
+        <section className="snap-start min-h-[90svh] flex items-center">
+          <div className="container mx-auto px-4 py-8 sm:py-10 w-full">
+            <h2 className="text-2xl sm:text-3xl font-bold text-chinese-blue mb-4 sm:mb-5 text-center">
+              Featured Events
+            </h2>
+            <Carousel items={demoItems} autoPlayMs={3200} />
+          </div>
+        </section>
+
         {/* Trending Categories (screen 3) */}
-        <section className="snap-start min-h-[100svh] flex items-center">
-          <div className="mx-auto w-full max-w-screen-xl px-6 sm:px-10 lg:px-16 py-12">
-            <TrendingCategories categories={categories} className="mt-2" />
+        <section className="snap-start min-h-[90svh] flex items-center">
+          <div className="container mx-auto px-4 py-8 sm:py-10 w-full">
+            <TrendingCategories categories={categories} className="mt-4" />
           </div>
         </section>
 
         {/* New Clubs Spotlight (screen 4) */}
-        <section className="snap-start min-h-[100svh] flex items-center">
-          <div className="mx-auto w-full max-w-screen-xl px-6 sm:px-10 lg:px-16 py-12">
+        <section className="snap-start min-h-[90svh] flex items-center">
+          <div className="container mx-auto px-4 py-8 sm:py-10 w-full">
             <NewClubsSpotlight clubs={clubs} />
           </div>
         </section>
+
+
       </main>
     </>
   );
