@@ -174,6 +174,9 @@ export async function POST(request: Request) {
 
         // Test compatibility with each potential buddy
         for (const buddy of potentialBuddies) {
+          const profile: any = Array.isArray((buddy as any).user_profiles)
+            ? (buddy as any).user_profiles[0]
+            : (buddy as any).user_profiles;
           // Basic compatibility checks first
           const basicCompatible = (
             genderPreference === 'open' || 
@@ -186,8 +189,8 @@ export async function POST(request: Request) {
             const aiScore = await getGeminiMatchScore(
               currentUser, 
               {
-                bio: buddy.user_profiles?.bio || '',
-                interests: buddy.user_profiles?.interests || [],
+                bio: profile?.bio || '',
+                interests: profile?.interests || [],
                 vibe: buddy.vibe,
                 gender_preference: buddy.gender_preference
               },
@@ -204,7 +207,7 @@ export async function POST(request: Request) {
             
             // Bonus for shared interests
             const sharedInterests = (currentUser.interests || []).filter(interest => 
-              (buddy.interests || []).includes(interest)
+              (profile?.interests || []).includes(interest)
             );
             finalScore += sharedInterests.length * 5;
 
