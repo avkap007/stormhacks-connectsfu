@@ -23,7 +23,7 @@ export default function NewClubsSpotlight({
 }) {
   return (
     <section className={`${className}`}>
-      <h2 className="text-2xl sm:text-3xl font-bold text-chinese-blue text-center mb-8">
+      <h2 className="text-3xl sm:text-4xl font-bold text-chinese-blue mb-6 text-center">
         {title}
       </h2>
 

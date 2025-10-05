@@ -10,6 +10,7 @@ module.exports = {
       colors: {
         'chinese-blue': '#151517ff',
         'ceil': '#9792CB',
+        'blue-mist': '#9bd3ee',
         'pearly-purple': '#AA74A0',
         'dessert-sand': '#E2C99E',
         'antique-ruby': '#852736',
@@ -21,6 +22,7 @@ module.exports = {
         'pastel-green': '#D3F4E3',
         'pastel-lavender': '#EADCF8',
         'pastel-peach': '#FFE0C2',
+        'cream': '#f6f2ee',
       },
       fontFamily: {
         sans: ["var(--font-roboto)", "sans-serif"],
