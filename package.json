@@ -16,7 +16,8 @@
     "next": "14.0.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
-    "resend": "^6.1.2"
+    "resend": "^6.1.2",
+    "tailwindcss-patterns": "^0.1.2"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
