@@ -78,6 +78,13 @@ export async function POST(request: Request) {
       );
     }
 
+    // Load event details for email context
+    const { data: event } = await supabase
+      .from('events')
+      .select('title, start_at, location_text, campus')
+      .eq('id', eventId)
+      .single();
+
     // Send confirmation email using the existing send-email API
     try {
       const emailResponse = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3001'}/api/send-email`, {
@@ -87,18 +94,18 @@ export async function POST(request: Request) {
         },
         body: JSON.stringify({
           to: email,
-          subject: `RSVP Confirmed: ${event.title}`,
+          subject: `RSVP Confirmed: ${event?.title || 'Your event'}`,
           html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
               <h2 style="color: #1e40af;">🎉 RSVP Confirmed!</h2>
               <p>Hi ${name},</p>
-              <p>Your RSVP for <strong>${event.title}</strong> has been confirmed!</p>
+              <p>Your RSVP for <strong>${event?.title || 'your event'}</strong> has been confirmed!</p>
               
               <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
                 <h3 style="margin-top: 0;">Event Details</h3>
-                <p><strong>Event:</strong> ${event.title}</p>
-                <p><strong>Date:</strong> ${new Date(event.start_at).toLocaleString()}</p>
-                <p><strong>Location:</strong> ${event.location_text}, ${event.campus}</p>
+                <p><strong>Event:</strong> ${event?.title || 'TBA'}</p>
+                <p><strong>Date:</strong> ${event?.start_at ? new Date(event.start_at).toLocaleString() : 'TBA'}</p>
+                <p><strong>Location:</strong> ${event?.location_text || 'TBA'}${event?.campus ? `, ${event.campus}` : ''}</p>
                 <p><strong>Status:</strong> ${status}</p>
                 ${findBuddy ? '<p><strong>Buddy Request:</strong> ✅ You\'re looking for a buddy!</p>' : ''}
               </div>

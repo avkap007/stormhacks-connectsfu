@@ -115,7 +115,7 @@ export default function EventModal({ event, isOpen, onClose }: EventModalProps) 
 
     const startDate = formatICSDate(event.start_at);
     const endDate = formatICSDate(event.end_at);
-    const now = formatICSDate(new Date());
+    const now = formatICSDate(new Date().toISOString());
     
     // Clean up text for ICS format
     const cleanText = (text: string) => {
@@ -206,7 +206,23 @@ export default function EventModal({ event, isOpen, onClose }: EventModalProps) 
             className="relative bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[85vh] overflow-hidden flex flex-col"
           >
             <div className="flex flex-1 min-h-0">
-              {/* Left Side - Event Info */}
+              {/* Left rail - Vertical poster */}
+              <div className="w-44 p-6 border-r hidden md:block">
+                {event.poster_vertical_url ? (
+                  <img
+                    src={event.poster_vertical_url}
+                    alt="Event poster"
+                    className="w-full rounded-lg border"
+                    loading="lazy"
+                  />
+                ) : (
+                  <div className="w-full h-64 rounded-lg border bg-gray-100 grid place-items-center text-gray-400 text-xs">
+                    poster
+                  </div>
+                )}
+              </div>
+
+              {/* Right - Event Info */}
               <div className="flex-1 p-8 overflow-y-auto">
                 {/* Header */}
                 <div className="flex items-start justify-between mb-6">
@@ -249,6 +265,22 @@ export default function EventModal({ event, isOpen, onClose }: EventModalProps) 
                     </div>
                   </div>
                   
+                  {/* Poster + Tags */}
+                  <div className="mt-4">
+                    {event.poster_vertical_url ? (
+                      <img
+                        src={event.poster_vertical_url}
+                        alt="Event poster"
+                        className="w-40 rounded-lg border"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="w-40 h-56 rounded-lg border bg-gray-100 grid place-items-center text-gray-400 text-xs">
+                        poster
+                      </div>
+                    )}
+                  </div>
+
                   {/* Tags */}
                   <div className="flex flex-wrap gap-2 mt-4">
                     {event.tags.map((tag) => (
@@ -272,11 +304,14 @@ export default function EventModal({ event, isOpen, onClose }: EventModalProps) 
                 <div className="bg-gray-50 rounded-xl p-4">
                   <h3 className="text-lg font-semibold text-gray-900 mb-3">About {event.clubs?.name || 'SFU Club'}</h3>
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-r from-chinese-blue to-ceil rounded-lg flex items-center justify-center text-white font-bold">
-                      {(event.clubs?.name || 'SFU Club').charAt(0)}
-                    </div>
+                    <img
+                      src={event.clubs?.logo_url || '/assets/blueprint.png'}
+                      alt="Club logo"
+                      className="w-10 h-10 rounded-lg object-cover border"
+                      loading="lazy"
+                    />
                     <div>
-                      <p className="font-medium text-gray-900">{event.clubs?.name || 'SFU Club'}</p>
+                      <p className="font-medium text-gray-900">{event.clubs?.name || 'Student Club'}</p>
                       <button className="text-sm text-chinese-blue hover:underline">
                         Follow Club
                       </button>
