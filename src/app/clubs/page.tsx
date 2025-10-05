@@ -108,15 +108,27 @@ export default function Clubs() {
 
           {/* Search & Filters */}
           <div className="rounded-2xl bg-white border border-gray-100 p-6 mb-10">
-            <div className="mb-4">
-              <input
-                type="text"
-                placeholder="Search clubs by name or description..."
-                className="w-full p-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-mist bg-white"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
+            {/* Gemini-style search bar (styling only) */}
+            <div className="mb-6">
+              <div className="flex items-center bg-white border border-gray-300 rounded-full shadow-md px-5 py-3 focus-within:ring-2 focus-within:ring-blue-mist/30 transition">
+                <input
+                  type="text"
+                  placeholder="Search clubs by name or description..."
+                  className="flex-1 bg-transparent outline-none text-gray-800 placeholder-gray-400 px-2 text-base sm:text-lg"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  autoComplete="off"
+                />
+                <button
+                  type="button"
+                  className="ml-3 bg-chinese-blue hover:bg-ceil text-white font-medium px-6 py-2 rounded-full transition-all duration-200"
+                >
+                  Search
+                </button>
+              </div>
             </div>
+
+            {/* Filter Chips */}
             <div className="flex flex-wrap gap-3 justify-center">
               <button
                 onClick={() => setSelectedCategory(null)}
@@ -164,13 +176,13 @@ export default function Clubs() {
             Showing {filteredClubs.length} club{filteredClubs.length !== 1 ? "s" : ""}
           </div>
 
-          {/* White cards without shadow, fixed bottom button */}
+          {/* White cards (scale on hover) */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredClubs.map((club) => (
               <Link
                 key={club.id}
                 href={`/clubs/${club.id}`}
-                className="flex flex-col relative rounded-2xl bg-white border border-gray-200 hover:border-blue-mist transition overflow-hidden p-6"
+                className="flex flex-col relative rounded-2xl bg-white border border-gray-200 hover:border-gray-300 transition-transform transform hover:scale-[1.02] overflow-hidden p-6"
               >
                 {/* Small square logo */}
                 <div className="absolute top-4 right-4 w-14 h-14 bg-white rounded-xl overflow-hidden border border-gray-200">
@@ -195,7 +207,7 @@ export default function Clubs() {
                 </div>
 
                 <div className="mt-auto pt-4">
-                  <button className="mt-auto w-full py-2.5 rounded-xl bg-black text-white font-medium text-sm hover:bg-gray-800 transition">
+                  <button className="w-full py-2.5 rounded-xl bg-black text-white font-medium text-sm hover:bg-neutral-900 transition">
                     Explore Club
                   </button>
                 </div>

@@ -33,7 +33,7 @@ export default function Navbar() {
         </Link>
 
         {/* Center - Navigation */}
-        <nav className="hidden md:flex flex-1 justify-center space-x-10 text-base font-normal">
+        <nav className="hidden md:flex flex-1 justify-center space-x-8 text-base font-normal">
           <Link href="/" className="hover:text-ceil transition-colors duration-200">
             Home
           </Link>
@@ -42,9 +42,6 @@ export default function Navbar() {
           </Link>
           <Link href="/events" className="hover:text-ceil transition-colors duration-200">
             Events
-          </Link>
-          <Link href="#feedback" className="hover:text-ceil transition-colors duration-200">
-            Feedback
           </Link>
         </nav>
 

@@ -240,6 +240,14 @@ export default function EventsPage() {
       <Navbar />
       
       <div className="container mx-auto px-4 py-8 pt-24">
+        <div className="text-center mb-10">
+            <h1 className="text-3xl sm:text-4xl font-bold text-chinese-blue mb-2 lowercase">
+              sfu clubs events
+            </h1>
+            <p className="text-sm text-gray-700 max-w-2xl mx-auto">
+              Discover and join exciting events hosted by student clubs across all SFU campuses.
+            </p>
+          </div>
         
         {/* Top Bar */}
         <div className="bg-white/40 backdrop-blur-sm rounded-xl p-6 mb-8 border border-gray-200/50 shadow-sm">
