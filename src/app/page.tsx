@@ -20,7 +20,7 @@ export default function Home() {
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!searchQuery.trim()) return;
 
     setSearchLoading(true);
@@ -32,12 +32,12 @@ export default function Home() {
         body: JSON.stringify({ query: searchQuery })
       });
       const filters = await resp.json();
-      
+
       console.log('Filters from Gemini:', filters);
-      
+
       // Build URL params from filters
       const params = new URLSearchParams();
-      
+
       if (filters.categories && filters.categories.length > 0) {
         params.append('categories', filters.categories.join(','));
       }
@@ -50,13 +50,13 @@ export default function Home() {
       if (filters.keywords && filters.keywords.length > 0) {
         params.append('q', filters.keywords.join(' '));
       }
-      
+
       const targetUrl = `/events?${params.toString()}`;
       console.log('Redirecting to:', targetUrl);
-      
+
       // Navigate to events page with filters
       router.push(targetUrl);
-      
+
     } catch (error) {
       console.error('Error with search:', error);
       // Fallback to simple search
@@ -67,12 +67,12 @@ export default function Home() {
   };
 
   const demoItems: CarouselItem[] = [
-    { id: 1,  title: "Tech Fair", subtitle: "Meet tech companies, explore career paths, and find your next opportunity.", imageUrl: "/assets/tech_fair.jpg", badge: "CSSS", ctaText: "RSVP", ctaHref: "#" },
-    { id: 2,  title: "Explore a Career with Microsoft",      subtitle: "Tour Microsoft’s Vancouver office and learn new skills from the pros.", imageUrl: "/assets/enactus.png", badge: "Enactus", ctaText: "RSVP", ctaHref: "#" },
-    { id: 3,  title: "Meet the Mentors",            subtitle: "Chat with mentors, get advice, and learn from their journeys.", imageUrl: "/assets/gdsc.png", badge: "GDSC", ctaText: "RSVP", ctaHref: "#" },
-    { id: 4,  title: "Surrey Study Hall",         subtitle: "Study together, stay focused, and make friends along the way.", imageUrl: "/assets/ssss.png", badge: "SSSS", ctaText: "RSVP", ctaHref: "#" },
-    { id: 5,  title: "sparkjam",          subtitle: "Team up to design creative solutions in a fun, fast-paced challenge.", imageUrl: "/assets/surge.png", badge: "SFU Surge", ctaText: "RSVP", ctaHref: "#" },
-    { id: 6,  title: "Git and Personal Website Workshop",          subtitle: "No experience needed! Learn Git basics and build your own personal website.", imageUrl: "/assets/wics.png", badge: "WICS", ctaText: "RSVP", ctaHref: "#" },
+    { id: 1, title: "Tech Fair", subtitle: "Meet tech companies, explore career paths, and find your next opportunity.", imageUrl: "/assets/tech_fair.jpg", badge: "CSSS", ctaText: "RSVP", ctaHref: "#" },
+    { id: 2, title: "Explore a Career with Microsoft", subtitle: "Tour Microsoft’s Vancouver office and learn new skills from the pros.", imageUrl: "/assets/enactus.png", badge: "Enactus", ctaText: "RSVP", ctaHref: "#" },
+    { id: 3, title: "Meet the Mentors", subtitle: "Chat with mentors, get advice, and learn from their journeys.", imageUrl: "/assets/gdsc.png", badge: "GDSC", ctaText: "RSVP", ctaHref: "#" },
+    { id: 4, title: "Surrey Study Hall", subtitle: "Study together, stay focused, and make friends along the way.", imageUrl: "/assets/ssss.png", badge: "SSSS", ctaText: "RSVP", ctaHref: "#" },
+    { id: 5, title: "sparkjam", subtitle: "Team up to design creative solutions in a fun, fast-paced challenge.", imageUrl: "/assets/surge.png", badge: "SFU Surge", ctaText: "RSVP", ctaHref: "#" },
+    { id: 6, title: "Git and Personal Website Workshop", subtitle: "No experience needed! Learn Git basics and build your own personal website.", imageUrl: "/assets/wics.png", badge: "WICS", ctaText: "RSVP", ctaHref: "#" },
   ];
 
   const categories: Category[] = [
@@ -84,11 +84,11 @@ export default function Home() {
   ];
 
   const clubs: Club[] = [
-    { id: "treehouse",   name: "treehouse",           tagline: "A welcoming creative space where makers and dreamers bring side quests to life.", imageUrl: "/assets/treehouse.png", href: "#" },
-    { id: "blueprint",     name: "SFU Blueprint",              tagline: "Building innovative tech solutions that create social impact for nonprofits.", imageUrl: "/assets/blueprint.png", href: "#" },
-    { id: "wlf",       name: "Work, Life, Food Garden",            tagline: "Engineering real-world solutions for food security and sustainable development.", imageUrl: "assets/wlf.png", href: "#" },
-    { id: "film",     name: "Film & Media Society",  tagline: "Create, shoot, and share your visual stories.", emoji: "🎬", href: "#" },
-    { id: "wellness", name: "Wellness Warriors",     tagline: "Mindfulness, meditation, and stress-relief weekly.", emoji: "🧘", href: "#" },
+    { id: "treehouse", name: "treehouse", tagline: "A welcoming creative space where makers and dreamers bring side quests to life.", imageUrl: "/assets/treehouse.png", href: "#" },
+    { id: "blueprint", name: "SFU Blueprint", tagline: "Building innovative tech solutions that create social impact for nonprofits.", imageUrl: "/assets/blueprint.png", href: "#" },
+    { id: "wlf", name: "Work, Life, Food Garden", tagline: "Engineering real-world solutions for food security and sustainable development.", imageUrl: "assets/wlf.png", href: "#" },
+    { id: "film", name: "Film & Media Society", tagline: "Create, shoot, and share your visual stories.", emoji: "🎬", href: "#" },
+    { id: "wellness", name: "Wellness Warriors", tagline: "Mindfulness, meditation, and stress-relief weekly.", emoji: "🧘", href: "#" },
   ];
 
   return (
@@ -116,12 +116,28 @@ export default function Home() {
         {/* Hero (screen 1) */}
         <section className="snap-start min-h-[100svh] flex items-center bg-white pt-20 sm:pt-24">
           <div className="container mx-auto px-6 sm:px-8 py-8 sm:py-12 w-full">
-            <div className="text-center max-w-3xl mx-auto">
-              {/* Title */}
-              <h1 className="text-5xl sm:text-6xl font-bold text-chinese-blue mb-5 lowercase">
-                welcome to connectsfu
-              </h1>
+            <div className="relative w-full">
+              {/* Mascots */}
+              <img
+                src="/assets/blue_animated.gif"
+                alt="Blue mascot"
+                className="absolute left-0 bottom-0 w-64 h-64 sm:w-72 sm:h-80 object-contain translate-y-40"
+              />
+              <img
+                src="/assets/orange_animated.gif"
+                alt="Orange mascot"
+                className="absolute right-0 bottom-0 w-64 h-64 sm:w-72 sm:h-80 object-contain translate-y-40"
+              />
 
+              {/* Text content */}
+              <div className="flex flex-col items-center text-center z-10 relative max-w-4xl mx-auto px-4 sm:px-6">
+    <h1 className="text-5xl sm:text-6xl font-bold text-chinese-blue lowercase leading-tight">
+                  welcome to connectsfu
+                </h1>
+
+              </div>
+            </div>
+            <div className="text-center max-w-2xl mx-auto">
               {/* Subtitle */}
               <p className="text-lg sm:text-xl text-gray-600 mb-10">
                 Find events, make friends, and discover your SFU community! Never go to an event alone again.
@@ -158,31 +174,6 @@ export default function Home() {
                 </p>
               </form>
             </div>
-            {/* image */}
-            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Left image */}
-              <div className="relative w-full overflow-hidden rounded-2xl -mt-16 sm:-mt-20">
-                <img
-                  src="/assets/mascot_blue.gif"   
-                  alt="Students collaborating"
-                  className="block w-64 h-64 sm:h-72 md:h-80 object-cover"
-                  loading="lazy"
-                />
-              </div>
-
-              {/* Right image */}
-              <div className="flex justify-end -mt-16 sm:-mt-20">
-                <div className="relative overflow-hidden rounded-2xl">
-                  <img
-                    src="/assets/mascot_orange.gif"
-                    alt="Campus life"
-                    className="block w-64 h-64 sm:h-72 md:h-80 object-cover rounded-2xl"
-                    loading="lazy"
-                  />
-                </div>
-              </div>
-
-            </div>
           </div>
         </section>
 
@@ -205,7 +196,7 @@ export default function Home() {
         {/* Trending Categories (screen 3) */}
         <section className="snap-start min-h-[100svh] flex items-center">
           <div className="mx-auto w-full max-w-screen-xl px-6 sm:px-10 lg:px-16 py-12">
-            <TrendingCategories 
+            <TrendingCategories
               categories={categories}
               title="trending categories"
               subtitle="your peers seem to love events in these categories"
@@ -216,8 +207,8 @@ export default function Home() {
         {/* New Clubs Spotlight (screen 4) */}
         <section className="snap-start min-h-[90svh] flex items-center">
           <div className="mx-auto w-full max-w-screen-xl px-6 sm:px-10 lg:px-16 py-12">
-            <NewClubsSpotlight 
-              clubs={clubs} 
+            <NewClubsSpotlight
+              clubs={clubs}
               title="new clubs spotlight"
               subtitle="new orgs on campus this month — show up to their events to show some love"
             />
