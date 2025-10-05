@@ -54,7 +54,7 @@ export default function TrendingCategories({
           grid-cols-1 sm:grid-cols-2 lg:grid-cols-3
           gap-4 sm:gap-6
           auto-rows-[240px] sm:auto-rows-[260px] lg:auto-rows-[280px]
-          rounded-3xl border border-gray-200 bg-gray-50 p-3 sm:p-4
+          rounded-3xl p-3 sm:p-4
         "
       >
         {reorderForDesktop(cats).map((cat) => {
@@ -145,7 +145,7 @@ function CardContent({
               pointer-events-none select-none h-24 sm:h-28 md:h-32 w-auto
               object-contain opacity-90
               transition-transform duration-500
-              group-hover:scale-110 group-hover:animate-bounce-slow
+              group-hover:scale-120 group-hover:animate-bounce-slow
             "
           />
         </div>

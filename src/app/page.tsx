@@ -18,11 +18,11 @@ export default function Home() {
   ];
 
 const categories: Category[] = [
-  { id: "community", label: "Get Cracked", href: "/events?category=Community", gif: "/assets/getcracked.gif" },
-  { id: "disappear", label: "Community", href: "/events?category=Social", gif: "/assets/schmooze.gif" },
-  { id: "friends", label: "Funsies", href: "/events?category=Friends", gif: "/assets/funsies.gif" },
-  { id: "arts", label: "Get Crafty", href: "/events?category=Arts", gif: "/assets/getcrafty.gif" },
-  { id: "levelup", label: "Schmooze", href: "/events?category=LevelUp", gif: "/assets/schmooze.gif" },
+  { id: "getcracked", label: "Get Cracked", href: "/events?category=Community", gif: "/assets/getcracked.gif" },
+  { id: "closeknit", label: "Close Knit", href: "/events?category=Social", gif: "/assets/closeknit.gif" },
+  { id: "funsies", label: "Funsies", href: "/events?category=Friends", gif: "/assets/funsies.gif" },
+  { id: "getcrafty", label: "Get Crafty", href: "/events?category=Arts", gif: "/assets/getcrafty.gif" },
+  { id: "schmooze", label: "Schmooze", href: "/events?category=LevelUp", gif: "/assets/schmooze.gif" },
 ];
 
 
@@ -69,28 +69,14 @@ const categories: Category[] = [
                   </button>
                 </div>
               </div>
-
-              {/* Stats Row */}
-              <div className="stats stats-vertical lg:stats-horizontal shadow bg-white rounded-2xl border border-gray-200 w-fit mx-auto p-4">
-                <div className="stat">
-                  <div className="stat-title text-gray-500">Downloads</div>
-                  <div className="stat-value text-chinese-blue">31K</div>
-                  <div className="stat-desc text-gray-500">Jan 1st - Feb 1st</div>
-                </div>
-
-                <div className="stat">
-                  <div className="stat-title text-gray-500">New Users</div>
-                  <div className="stat-value text-chinese-blue">4,200</div>
-                  <div className="stat-desc text-green-600">↗︎ 400 (22%)</div>
-                </div>
-
-                <div className="stat">
-                  <div className="stat-title text-gray-500">New Registers</div>
-                  <div className="stat-value text-chinese-blue">1,200</div>
-                  <div className="stat-desc text-red-500">↘︎ 90 (14%)</div>
-                </div>
-              </div>
             </div>
+          </div>
+        </section>
+
+        {/* Trending Categories (screen 3) */}
+        <section className="snap-start min-h-[100svh] flex items-center">
+          <div className="container mx-auto px-4 py-12 w-full">
+            <TrendingCategories categories={categories} className="mt-6" />
           </div>
         </section>
 
@@ -105,12 +91,7 @@ const categories: Category[] = [
           </div>
         </section>
 
-        {/* Trending Categories (screen 3) */}
-        <section className="snap-start min-h-[100svh] flex items-center">
-          <div className="container mx-auto px-4 py-12 w-full">
-            <TrendingCategories categories={categories} className="mt-6" />
-          </div>
-        </section>
+        
 
         {/* New Clubs Spotlight (screen 4) */}
         <section className="snap-start min-h-[100svh] flex items-center">
