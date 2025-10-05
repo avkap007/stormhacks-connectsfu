@@ -30,9 +30,11 @@ export interface Event {
   start_at: string;
   end_at: string;
   poster_url?: string;
+  poster_vertical_url?: string;
   created_by: string;
   status: string;
   max_attendees?: number;
+  attendees?: number; // optional, derived or denormalized count
   is_free: boolean;
   cost?: number;
   tags: string[];
