@@ -27,10 +27,11 @@ export default function TrendingCategories({
 
   const pastel = [
     "bg-sky-100",
-    "bg-blue-100",
+    "bg-violet-200",
     "bg-amber-100",
     "bg-pink-100",
-    "bg-violet-200",
+    "bg-blue-100",
+    
   ];
 
   const spanByIndex = [
@@ -79,10 +80,11 @@ export default function TrendingCategories({
                             ${
                               [
                                 "bg-sky-200/40",
-                                "bg-blue-200/40",
+                                "bg-violet-300/40",
                                 "bg-amber-200/40",
                                 "bg-pink-200/40",
-                                "bg-violet-300/40",
+                                "bg-blue-200/40",
+                                
                               ][i % 5]
                             }
                             blur-xl z-0`}

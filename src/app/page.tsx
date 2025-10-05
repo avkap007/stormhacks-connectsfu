@@ -18,11 +18,11 @@ export default function Home() {
   ];
 
 const categories: Category[] = [
-  { id: "community", label: "Community", href: "/events?category=Community", gif: "/assets/triangle-heart.gif" },
-  { id: "disappear", label: "Make it Disappear", href: "/events?category=Social", gif: "/assets/triangle-heart.gif" },
-  { id: "friends", label: "Talk with Friends", href: "/events?category=Friends", gif: "/assets/triangle-heart.gif" },
-  { id: "arts", label: "Arts & Crafts", href: "/events?category=Arts", gif: "/assets/triangle-heart.gif" },
-  { id: "levelup", label: "Level Up", href: "/events?category=LevelUp", gif: "/assets/triangle-heart.gif" },
+  { id: "community", label: "Get Cracked", href: "/events?category=Community", gif: "/assets/getcracked.gif" },
+  { id: "disappear", label: "Community", href: "/events?category=Social", gif: "/assets/schmooze.gif" },
+  { id: "friends", label: "Funsies", href: "/events?category=Friends", gif: "/assets/funsies.gif" },
+  { id: "arts", label: "Get Crafty", href: "/events?category=Arts", gif: "/assets/getcrafty.gif" },
+  { id: "levelup", label: "Schmooze", href: "/events?category=LevelUp", gif: "/assets/schmooze.gif" },
 ];
 
 
@@ -38,22 +38,62 @@ const categories: Category[] = [
     <>
       <Navbar />
       {/* main is just the backdrop; snapping is on body in layout */}
-      <main className="bg-gradient-to-br from-ceil/10 via-pearly-purple/5 to-dessert-sand/10">
+      <main className="bg-white from-ceil/10 via-pearly-purple/5">
         
         {/* Hero (screen 1) */}
-        <section className="snap-start min-h-[100svh] flex items-center">
-          <div className="container mx-auto px-4 py-16 w-full">
+        <section className="snap-start min-h-[100svh] flex items-center bg-white">
+          <div className="container mx-auto px-6 sm:px-10 py-20 w-full">
             <div className="text-center max-w-3xl mx-auto">
-              <h1 className="text-5xl font-bold text-chinese-blue mb-4">
+              {/* Title */}
+              <h1 className="text-5xl sm:text-6xl font-bold text-chinese-blue mb-6">
                 Welcome to ConnectSFU
               </h1>
-              <p className="text-xl text-gray-600 mb-8">
+
+              {/* Subtitle */}
+              <p className="text-lg sm:text-xl text-gray-600 mb-12">
                 Find events, make friends, and discover your SFU community! Never go to an event alone again.
               </p>
-              {/* You can drop your global search + Explore buttons here */}
+
+              {/* Search Input */}
+              <div className="w-full max-w-2xl mx-auto mb-12">
+                <div className="flex items-center bg-white border border-gray-300 rounded-full shadow-md px-5 py-3 focus-within:ring-2 focus-within:ring-chinese-blue/30 transition">
+                  <input
+                    type="text"
+                    placeholder="Search events, clubs, or people..."
+                    className="flex-1 bg-transparent outline-none text-gray-800 placeholder-gray-400 px-2 text-base sm:text-lg"
+                  />
+                  <button
+                    className="ml-3 bg-chinese-blue hover:bg-ceil text-white font-medium px-6 py-2 rounded-full transition-all duration-200"
+                  >
+                    Search
+                  </button>
+                </div>
+              </div>
+
+              {/* Stats Row */}
+              <div className="stats stats-vertical lg:stats-horizontal shadow bg-white rounded-2xl border border-gray-200 w-fit mx-auto p-4">
+                <div className="stat">
+                  <div className="stat-title text-gray-500">Downloads</div>
+                  <div className="stat-value text-chinese-blue">31K</div>
+                  <div className="stat-desc text-gray-500">Jan 1st - Feb 1st</div>
+                </div>
+
+                <div className="stat">
+                  <div className="stat-title text-gray-500">New Users</div>
+                  <div className="stat-value text-chinese-blue">4,200</div>
+                  <div className="stat-desc text-green-600">↗︎ 400 (22%)</div>
+                </div>
+
+                <div className="stat">
+                  <div className="stat-title text-gray-500">New Registers</div>
+                  <div className="stat-value text-chinese-blue">1,200</div>
+                  <div className="stat-desc text-red-500">↘︎ 90 (14%)</div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
+
 
         {/* Featured Events (screen 2) */}
         <section className="snap-start min-h-[100svh] flex items-center">
