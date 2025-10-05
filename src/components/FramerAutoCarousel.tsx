@@ -18,11 +18,12 @@ interface CarouselProps {
   autoPlayMs?: number;
   className?: string;
   initialIndex?: number; // 0..items.length-1
+  perView?: number;
 }
 
 export default function Carousel({
   items,
-  autoPlayMs = 3200,
+  autoPlayMs = 3000,
   className,
   initialIndex = 0,
 }: CarouselProps) {
@@ -198,7 +199,7 @@ export default function Carousel({
       aria-roledescription="carousel"
     >
       {/* Clipping shell */}
-      <div ref={clipRef} className="overflow-hidden rounded-2xl border border-gray-200 bg-gray-100 px-3 py-3 sm:px-4 sm:py-4">
+      <div ref={clipRef} className="overflow-hidden rounded-2xl px-3 py-3 sm:px-4 sm:py-4">
         <motion.div
           ref={trackRef}
           className="flex justify-start gap-4 sm:gap-5 items-stretch will-change-transform"
@@ -257,25 +258,18 @@ export default function Carousel({
 /** Fixed-size card */
 function Slide({ item }: { item: CarouselItem }) {
   return (
-    <div
+     <div
       data-slide
       className="
         shrink-0
-        w-72
-        sm:w-80
-        md:w-96
+        w-[250px]
+        sm:w-[280px]
+        md:w-[280px]
       "
     >
-      <div className="rounded-2xl bg-white shadow-sm border border-gray-200 overflow-hidden h-[380px] flex flex-col">
-        <div className="w-full h-44 sm:h-48 overflow-hidden">
-          {item.imageUrl ? (
-            <img src={item.imageUrl} alt={item.title ?? "Slide image"} className="w-full h-full object-cover" loading="lazy" />
-          ) : (
-            <div className="w-full h-full grid place-items-center bg-gradient-to-br from-ceil/30 via-pearly-purple/20 to-dessert-sand/30 text-chinese-blue font-semibold">
-              No image
-            </div>
-          )}
-        </div>
+      <div className="rounded-2xl bg-white shadow-sm border border-gray-100 overflow-hidden h-[600px] flex flex-col">
+        
+
         <div className="p-4 flex-1 flex flex-col">
           {item.badge && (
             <span className="inline-block w-fit px-2.5 py-1 mb-2 text-[11px] sm:text-xs font-medium rounded-full bg-ceil/20 text-chinese-blue border border-ceil/30">
@@ -285,11 +279,26 @@ function Slide({ item }: { item: CarouselItem }) {
           {item.title && <h3 className="text-lg sm:text-xl font-bold text-chinese-blue mb-1.5 line-clamp-2">{item.title}</h3>}
           {item.subtitle && <p className="text-[14px] text-gray-700 leading-relaxed mb-3 line-clamp-3">{item.subtitle}</p>}
           {item.ctaText && item.ctaHref && (
-            <a href={item.ctaHref} className="mt-auto inline-flex items-center justify-center px-4 py-2 rounded-xl bg-chinese-blue text-white text-sm font-medium hover:bg-ceil transition">
+            <a href={item.ctaHref} className="mt-auto inline-flex items-center justify-center px-4 py-2 rounded-xl bg-pastel-blue text-white text-sm font-medium hover:bg-ceil transition">
               {item.ctaText}
             </a>
           )}
         </div>
+
+        <div className="w-full h-[485px] sm:h-[485px] overflow-hidden rounded-2xl">
+            {item.imageUrl ? (
+                <img
+                src={item.imageUrl}
+                alt={item.title ?? "Slide image"}
+                className="w-full h-full object-cover rounded-2xl"
+                loading="lazy"
+                />
+            ) : (
+                <div className="w-full h-full grid place-items-center rounded-2xl bg-gradient-to-br from-ceil/30 via-pearly-purple/20 to-dessert-sand/30 text-chinese-blue font-semibold">
+                No image
+                </div>
+            )}
+            </div>
       </div>
     </div>
   );

@@ -21,6 +21,7 @@ module.exports = {
         'pastel-green': '#D3F4E3',
         'pastel-lavender': '#EADCF8',
         'pastel-peach': '#FFE0C2',
+        'cream': '#f6f2ee',
       },
       fontFamily: {
         sans: ["var(--font-roboto)", "sans-serif"],
