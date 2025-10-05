@@ -21,8 +21,13 @@ interface UserEvent {
   id: string;
   title: string;
   start_at: string;
+  end_at?: string;
+  campus?: string;
+  location?: string;
+  club?: string;
   status: string;
   find_buddy: boolean;
+  rsvp_date?: string;
 }
 
 export default function UserProfile() {
@@ -76,18 +81,21 @@ export default function UserProfile() {
       if (rsvpError) {
         console.error('Error loading user RSVPs:', rsvpError);
       } else {
-        const events = rsvps?.map(rsvp => ({
-          id: rsvp.events.id,
-          title: rsvp.events.title,
-          start_at: rsvp.events.start_at,
-          end_at: rsvp.events.end_at,
-          location: rsvp.events.location_text,
-          campus: rsvp.events.campus,
-          club: rsvp.events.clubs?.name,
-          status: rsvp.status,
-          find_buddy: rsvp.find_buddy,
-          rsvp_date: rsvp.created_at
-        })) || [];
+        const events = rsvps?.map((rsvp: any) => {
+          const ev = Array.isArray(rsvp.events) ? rsvp.events[0] : rsvp.events;
+          return {
+            id: ev?.id,
+            title: ev?.title,
+            start_at: ev?.start_at,
+            end_at: ev?.end_at,
+            location: ev?.location_text,
+            campus: ev?.campus,
+            club: ev?.clubs?.[0]?.name ?? ev?.clubs?.name,
+            status: rsvp.status,
+            find_buddy: rsvp.find_buddy,
+            rsvp_date: rsvp.created_at
+          } as any;
+        }) || [];
         setUserEvents(events);
       }
 
@@ -326,6 +334,17 @@ export default function UserProfile() {
         </motion.div>
       )}
 
+      {/* Messages entry point */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-white rounded-2xl shadow-lg p-6"
+      >
+        <h2 className="text-xl font-semibold text-gray-900 mb-4">Messages</h2>
+        <p className="text-gray-600 mb-4">Your buddy matches and conversations.</p>
+        <a href="/messages" className="px-4 py-2 bg-chinese-blue text-white rounded-lg hover:bg-ceil transition-colors text-sm font-medium">Open messages</a>
+      </motion.div>
+
       {/* User Events */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -357,9 +376,11 @@ export default function UserProfile() {
                           Looking for buddy
                         </span>
                       )}
-                      <span className="text-xs text-gray-500">
-                        RSVP'd on {new Date(event.rsvp_date).toLocaleDateString()}
-                      </span>
+                      {event.rsvp_date && (
+                        <span className="text-xs text-gray-500">
+                          RSVP'd on {new Date(event.rsvp_date).toLocaleDateString()}
+                        </span>
+                      )}
                     </div>
                   </div>
                   <span className={`px-3 py-1 rounded-full text-sm font-medium ${

@@ -16,6 +16,7 @@ export async function POST(request: Request) {
       .from('buddy_matches')
       .select(`
         id,
+        event_id,
         user_a,
         user_b,
         compatibility_score,

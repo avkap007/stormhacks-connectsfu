@@ -122,8 +122,25 @@ export default function EventCard({ event, viewMode, onLearnMore }: EventCardPro
     <motion.div
       whileHover={{ scale: 1.02, y: -4 }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
-      className="bg-white/40 backdrop-blur-sm rounded-xl p-5 border border-gray-200/50 hover:border-gray-300/50 hover:shadow-lg transition-all duration-200 h-full flex flex-col"
+      className="bg-white/40 backdrop-blur-sm rounded-xl border border-gray-200/50 hover:border-gray-300/50 hover:shadow-lg transition-all duration-200 h-full flex"
     >
+      {/* Vertical poster */}
+      <div className="w-24 sm:w-28 md:w-32 shrink-0">
+        {event.poster_vertical_url || event.poster_url ? (
+          <img
+            src={event.poster_vertical_url || event.poster_url!}
+            alt="Poster"
+            className="h-full w-full object-cover rounded-l-xl"
+            loading="lazy"
+          />
+        ) : (
+          <div className="h-full min-h-40 w-full rounded-l-xl bg-gray-100 grid place-items-center text-gray-400 text-xs">
+            poster
+          </div>
+        )}
+      </div>
+
+      <div className="p-5 flex-1 flex flex-col">
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex-1">
@@ -201,6 +218,7 @@ export default function EventCard({ event, viewMode, onLearnMore }: EventCardPro
       >
         Learn More
       </button>
+      </div>
     </motion.div>
   );
 }
