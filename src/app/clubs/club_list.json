@@ -206,7 +206,9 @@
   {
     "name": "Google Developer Student Club - SFU",
     "description": "To empower students across all majors to use modern technology to solve real-life problems in our community. Our founding principles are growth, collaboration, and innovation, and we intend to keep this principle in every networking event, competition, tech talk, and workshop we organize.",
-    "logo": "https://go.sfss.ca/clubs/878/logo"
+    "logo": "https://go.sfss.ca/clubs/878/logo",
+    "email": "sfu.gdsc@gmail.com",
+    "website": "https://gdsc.community.dev/simon-fraser-university/"
   },
   {
     "name": "Hiking Club",
