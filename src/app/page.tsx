@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Carousel, { type CarouselItem } from "@/components/FramerAutoCarousel";
@@ -12,6 +12,14 @@ export default function Home() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [searchLoading, setSearchLoading] = useState(false);
+
+  // Debug: Check if API key is loaded
+  useEffect(() => {
+    console.log('Home page mounted');
+    console.log('API Key available:', !!process.env.NEXT_PUBLIC_GEMINI_API_KEY);
+    console.log('API Key preview:', process.env.NEXT_PUBLIC_GEMINI_API_KEY?.substring(0, 10) + '...');
+    console.log('Search loading state:', searchLoading);
+  }, [searchLoading]);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -115,15 +123,22 @@ export default function Home() {
               </p>
 
               {/* Search Input with Gemini */}
-              <form onSubmit={handleSearch} className="w-full max-w-2xl mx-auto mb-12">
-                <div className="flex items-center bg-white border border-gray-300 rounded-full shadow-md px-5 py-3 focus-within:ring-2 focus-within:ring-chinese-blue/30 transition">
+              <form onSubmit={handleSearch} className="w-full max-w-2xl mx-auto mb-12 relative z-10">
+                <div className="flex items-center bg-white border border-gray-300 rounded-full shadow-md px-5 py-3 focus-within:ring-2 focus-within:ring-chinese-blue/30 transition relative z-10">
                   <input
                     type="text"
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onClick={() => console.log('Landing page input clicked')}
+                    onFocus={() => console.log('Landing page input focused')}
+                    onChange={(e) => {
+                      console.log('Landing page input changed:', e.target.value);
+                      setSearchQuery(e.target.value);
+                    }}
                     placeholder="Try: 'tech events next week' or 'business networking in Burnaby'"
-                    className="flex-1 bg-transparent outline-none text-gray-800 placeholder-gray-400 px-2 text-base sm:text-lg"
-                    disabled={searchLoading}
+                    className="flex-1 bg-transparent outline-none text-gray-800 placeholder-gray-400 px-2 text-base sm:text-lg cursor-text"
+                    style={{ pointerEvents: 'auto', zIndex: 999 }}
+                    disabled={false}
+                    autoComplete="off"
                   />
                   <button
                     type="submit"
@@ -166,20 +181,13 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Trending Categories (screen 3) */}
-        <section className="snap-start min-h-[100svh] flex items-center">
-          <div className="container mx-auto px-4 py-12 w-full">
-            <TrendingCategories categories={categories} className="mt-6" />
-          </div>
-        </section>
-
         {/* Featured Events (screen 2) */}
         <section className="snap-start min-h-[100svh] flex items-center">
           <div className="mx-auto w-full max-w-screen-xl px-6 sm:px-10 lg:px-16 py-12">
             <h2 className="text-3xl sm:text-4xl font-bold text-chinese-blue mb-6">
               Featured Events
             </h2>
-            {/* extra wrapper so cards don’t touch sides on huge screens */}
+            {/* extra wrapper so cards don't touch sides on huge screens */}
             <div className="mx-auto max-w-[1200px]">
               <Carousel items={demoItems} autoPlayMs={3200} />
             </div>
