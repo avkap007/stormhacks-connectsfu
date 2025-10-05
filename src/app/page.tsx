@@ -6,20 +6,17 @@ import Navbar from "@/components/Navbar";
 import Carousel, { type CarouselItem } from "@/components/FramerAutoCarousel";
 import TrendingCategories, { type Category } from "@/components/TrendingCategories";
 import NewClubsSpotlight, { type Club } from "@/components/NewClubsSpotlight";
-import { parseNaturalLanguageQuery } from "@/lib/geminiSearch";
+// Use server API for Gemini to keep key private
 
 export default function Home() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [searchLoading, setSearchLoading] = useState(false);
 
-  // Debug: Check if API key is loaded
+  // Debug: basic mount log (no secrets)
   useEffect(() => {
     console.log('Home page mounted');
-    console.log('API Key available:', !!process.env.NEXT_PUBLIC_GEMINI_API_KEY);
-    console.log('API Key preview:', process.env.NEXT_PUBLIC_GEMINI_API_KEY?.substring(0, 10) + '...');
-    console.log('Search loading state:', searchLoading);
-  }, [searchLoading]);
+  }, []);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,8 +25,13 @@ export default function Home() {
 
     setSearchLoading(true);
     try {
-      // Use Gemini to parse the natural language query
-      const filters = await parseNaturalLanguageQuery(searchQuery);
+      // Call server route to parse with Gemini (server-side key)
+      const resp = await fetch('/api/gemini-parse', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: searchQuery })
+      });
+      const filters = await resp.json();
       
       console.log('Filters from Gemini:', filters);
       
