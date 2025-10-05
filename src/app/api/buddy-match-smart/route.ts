@@ -206,8 +206,14 @@ export async function POST(request: Request) {
             }
             
             // Bonus for shared interests
-            const sharedInterests = (currentUser.interests || []).filter(interest => 
-              (profile?.interests || []).includes(interest)
+            const userInterests: string[] = Array.isArray(currentUser.interests)
+              ? (currentUser.interests as string[])
+              : [];
+            const buddyInterests: string[] = Array.isArray(profile?.interests)
+              ? ((profile?.interests as string[]))
+              : [];
+            const sharedInterests = userInterests.filter((interest: string) =>
+              buddyInterests.includes(interest)
             );
             finalScore += sharedInterests.length * 5;
 
@@ -254,7 +260,7 @@ export async function POST(request: Request) {
                 },
                 body: JSON.stringify({
                   matchId: buddyMatch.id,
-                  eventTitle: event.title,
+                  eventTitle: (event as any)?.title || 'Event',
                   buddyName: bestMatch.nickname
                 })
               });
@@ -262,14 +268,18 @@ export async function POST(request: Request) {
               console.error('Failed to send notifications:', notifyError);
             }
 
+            const bestProfile: any = Array.isArray((bestMatch as any).user_profiles)
+              ? (bestMatch as any).user_profiles[0]
+              : (bestMatch as any).user_profiles;
+
             return NextResponse.json({
               success: true,
               matchFound: true,
               buddy: {
                 nickname: bestMatch.nickname,
                 vibe: bestMatch.vibe,
-                bio: bestMatch.user_profiles?.bio || '',
-                interests: bestMatch.user_profiles?.interests || []
+                bio: bestProfile?.bio || '',
+                interests: bestProfile?.interests || []
               },
               matchId: buddyMatch.id,
               compatibilityScore: bestScore
