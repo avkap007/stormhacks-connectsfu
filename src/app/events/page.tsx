@@ -114,6 +114,62 @@ export default function EventsPage() {
     setIsModalOpen(true);
   };
 
+  // Filter events based on search query and active filters
+  const filteredEvents = events.filter(event => {
+    // Search filter
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      const matchesSearch = 
+        event.title.toLowerCase().includes(query) ||
+        event.description.toLowerCase().includes(query) ||
+        event.clubs?.name.toLowerCase().includes(query) ||
+        event.tags?.some(tag => tag.toLowerCase().includes(query));
+      
+      if (!matchesSearch) return false;
+    }
+
+    // Campus filter
+    if (selectedCampuses.length > 0) {
+      if (!selectedCampuses.includes(event.campus || '')) return false;
+    }
+
+    // Category filter
+    if (selectedCategories.length > 0) {
+      if (!selectedCategories.includes(event.category || '')) return false;
+    }
+
+    // Date filter (basic implementation)
+    if (selectedDate && selectedDate !== 'All dates') {
+      const eventDate = new Date(event.start_at);
+      const today = new Date();
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+
+      switch (selectedDate) {
+        case 'Today':
+          if (eventDate.toDateString() !== today.toDateString()) return false;
+          break;
+        case 'Tomorrow':
+          if (eventDate.toDateString() !== tomorrow.toDateString()) return false;
+          break;
+        case 'This weekend':
+          const dayOfWeek = eventDate.getDay();
+          if (dayOfWeek !== 0 && dayOfWeek !== 6) return false;
+          break;
+        case 'Next week':
+          const nextWeek = new Date(today);
+          nextWeek.setDate(nextWeek.getDate() + 7);
+          if (eventDate > nextWeek) return false;
+          break;
+        case 'This month':
+          if (eventDate.getMonth() !== today.getMonth()) return false;
+          break;
+      }
+    }
+
+    return true;
+  });
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-ceil/10 via-pearly-purple/5 to-dessert-sand/10 pt-16 flex items-center justify-center">
@@ -254,13 +310,13 @@ export default function EventsPage() {
         )}
 
         {/* Events Grid/List */}
-        {events.length > 0 ? (
+        {filteredEvents.length > 0 ? (
           <div className={`${
             viewMode === 'grid' 
               ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' 
               : 'space-y-4'
           }`}>
-            {events.map((event) => (
+            {filteredEvents.map((event) => (
               <EventCard 
                 key={event.id} 
                 event={event} 
@@ -272,11 +328,14 @@ export default function EventsPage() {
         ) : (
           <div className="text-center py-12">
             <p className="text-xl text-gray-600">No events found</p>
+            {(searchQuery || selectedCampuses.length > 0 || selectedCategories.length > 0 || selectedDate) && (
+              <p className="text-sm text-gray-500 mt-2">Try adjusting your search or filters</p>
+            )}
           </div>
         )}
 
         {/* Load More Button */}
-        {events.length > 0 && (
+        {filteredEvents.length > 0 && (
           <div className="text-center mt-12">
             <button className="px-8 py-4 rounded-xl bg-gradient-to-r from-chinese-blue to-ceil text-white hover:shadow-lg transition-all duration-200 font-medium">
               Show More Events
