@@ -121,6 +121,7 @@ function CardContent({
   gifSrc?: string;
   id?: string;
 }) {
+  // 🔸 Make "closeknit" GIF larger
   const isLargeGif = id === "closeknit";
 
   return (
@@ -149,8 +150,8 @@ function CardContent({
               transition-transform duration-500
               group-hover:scale-110 group-hover:animate-bounce-slow
               ${isLargeGif
-                ? "h-40 sm:h-48 md:h-56"
-                : "h-24 sm:h-28 md:h-32"}
+                ? "h-40 sm:h-48 md:h-56" // 🔸 Larger for Close Knit
+                : "h-24 sm:h-28 md:h-32"} // Default
             `}
           />
         </div>

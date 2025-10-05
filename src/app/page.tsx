@@ -117,12 +117,22 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Trending Categories (screen 3) */}
+        {/* Featured Events (screen 2) */}
         <section className="snap-start min-h-[100svh] flex items-center">
-          <div className="mx-auto w-full max-w-screen-xl px-6 sm:px-10 lg:px-16 py-12">
-            <TrendingCategories categories={categories} className="mt-2" />
+          <div className="container mx-auto px-4 py-12 w-full">
+            <h2 className="text-2xl sm:text-3xl font-bold text-chinese-blue mb-4 sm:mb-6 text-center">
+              Featured Events
+            </h2>
+            <Carousel items={demoItems} autoPlayMs={3200} />
           </div>
         </section>
+
+        {/* Trending Categories (screen 3) */}
+        <section className="snap-start min-h-[100svh] flex items-center">
+          <div className="container mx-auto px-4 py-12 w-full">
+            <TrendingCategories categories={categories} className="mt-6" />
+          </div>
+        </section> 
 
         {/* New Clubs Spotlight (screen 4) */}
         <section className="snap-start min-h-[100svh] flex items-center">
