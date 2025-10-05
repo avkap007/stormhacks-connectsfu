@@ -102,7 +102,9 @@
   {
     "name": "Canadianized Asian Club (CAC)",
     "description": "Our goal as a student-led non-profit organization is to enhance student’s university experience, placing our membership body first. We strive to build an inclusive community that engages students through a variety of activities and events. We encourage students to join our executive committee to further their experience.",
-    "logo": "https://go.sfss.ca/clubs/44/logo"
+    "logo": "https://go.sfss.ca/clubs/44/logo",
+    "email": "talktocac@gmail.com",
+    "website": "https://caconline.ca"
   },
   {
     "name": "CaseIT",
@@ -162,7 +164,9 @@
   {
     "name": "Enactus SFU",
     "description": "To encourage entrepreneurship on our campuses and in the community through our various programs. We consider the relevant economic, social and environmental factors to effectively empower people in need\nby applying business and economic concepts and an entrepreneurial approach to improve their quality of life and standard of living.",
-    "logo": "https://go.sfss.ca/clubs/98/logo"
+    "logo": "https://go.sfss.ca/clubs/98/logo",
+    "email": "info@enactussfu.com",
+    "website": "https://www.enactussfu.ca"
   },
   {
     "name": "Engineers Without Borders - SFU Chapter",
@@ -567,7 +571,9 @@
   {
     "name": "SFU Surge",
     "description": "We are a community for students in tech to learn from industry professionals at conferences and talks, to hone skills and experience at large-scale hackathons and competitions, to network at events and workshops to enable community innovation, and to gain project experience working on software used by SFU students.",
-    "logo": "https://go.sfss.ca/clubs/831/logo"
+    "logo": "https://go.sfss.ca/clubs/831/logo",
+    "email": "sfusurge@gmail.com",
+    "website": "https://sfusurge.com/"
   },
   {
     "name": "SFU Swifties",
