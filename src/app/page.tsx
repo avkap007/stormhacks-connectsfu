@@ -67,12 +67,12 @@ export default function Home() {
   };
 
   const demoItems: CarouselItem[] = [
-    { id: 1,  title: "Web Development Workshop", subtitle: "Learn React, Next.js, and modern practices. Perfect for beginners!", imageUrl: "/assets/tech_fair.jpg", badge: "GDSC SFU", ctaText: "RSVP", ctaHref: "#" },
-    { id: 2,  title: "Hack Night @ Burnaby",      subtitle: "Pair up, ship something fun, meet new friends!", imageUrl: "/assets/enactus.png", badge: "ConnectSFU", ctaText: "RSVP", ctaHref: "#" },
-    { id: 3,  title: "Intro to UI/UX",            subtitle: "Design sprint basics and prototyping with Figma.", imageUrl: "/assets/gdsc.png", badge: "Design Club", ctaText: "RSVP", ctaHref: "#" },
-    { id: 4,  title: "Mobile Dev Meetup",         subtitle: "Kotlin vs Swift lightning talks and demos.", imageUrl: "/assets/ssss.png", badge: "Mobile Club", ctaText: "RSVP", ctaHref: "#" },
-    { id: 5,  title: "Data Science 101",          subtitle: "Pandas, NumPy, and a quick intro to ML.", imageUrl: "/assets/surge.png", badge: "AI Society", ctaText: "RSVP", ctaHref: "#" },
-    { id: 6,  title: "Game Jam Weekend",          subtitle: "48 hours, build and pitch your game!", imageUrl: "/assets/wics.png", badge: "Game Dev", ctaText: "RSVP", ctaHref: "#" },
+    { id: 1,  title: "Tech Fair", subtitle: "Meet tech companies, explore career paths, and find your next opportunity.", imageUrl: "/assets/tech_fair.jpg", badge: "CSSS", ctaText: "RSVP", ctaHref: "#" },
+    { id: 2,  title: "Explore a Career with Microsoft",      subtitle: "Tour Microsoft’s Vancouver office and learn new skills from the pros.", imageUrl: "/assets/enactus.png", badge: "Enactus", ctaText: "RSVP", ctaHref: "#" },
+    { id: 3,  title: "Meet the Mentors",            subtitle: "Chat with mentors, get advice, and learn from their journeys.", imageUrl: "/assets/gdsc.png", badge: "GDSC", ctaText: "RSVP", ctaHref: "#" },
+    { id: 4,  title: "Surrey Study Hall",         subtitle: "Study together, stay focused, and make friends along the way.", imageUrl: "/assets/ssss.png", badge: "SSSS", ctaText: "RSVP", ctaHref: "#" },
+    { id: 5,  title: "sparkjam",          subtitle: "Team up to design creative solutions in a fun, fast-paced challenge.", imageUrl: "/assets/surge.png", badge: "SFU Surge", ctaText: "RSVP", ctaHref: "#" },
+    { id: 6,  title: "Git and Personal Website Workshop",          subtitle: "No experience needed! Learn Git basics and build your own personal website.", imageUrl: "/assets/wics.png", badge: "WICS", ctaText: "RSVP", ctaHref: "#" },
   ];
 
   const categories: Category[] = [
