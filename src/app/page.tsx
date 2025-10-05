@@ -1,4 +1,4 @@
-// app/page.tsx (or app/(marketing)/page.tsx depending on your structure)
+// app/page.tsx
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
@@ -27,6 +27,15 @@ type EventAPI = {
   } | null;
 };
 
+// fun label → filter categories mapping for Trending
+const TREND_TO_FILTER: Record<string, string[]> = {
+  getcracked: ["Technology"],
+  funsies: ["Cultural"],
+  closeknit: ["Networking"],
+  getcrafty: ["Health & Wellness"],
+  schmooze: ["Business", "Career", "Networking"],
+};
+
 export default function Home() {
   const router = useRouter();
 
@@ -38,12 +47,9 @@ export default function Home() {
   const [loadingFeatured, setLoadingFeatured] = useState(true);
 
   useEffect(() => {
-    // Pull top (popular) upcoming events
     const load = async () => {
       try {
-        const res = await fetch("/api/events?upcoming=1&sort=popular&limit=8", {
-          cache: "no-store",
-        });
+        const res = await fetch("/api/events?upcoming=1&sort=popular&limit=8", { cache: "no-store" });
         if (!res.ok) throw new Error("Failed to load events");
         const data = (await res.json()) as EventAPI[];
         setFeatured(data);
@@ -56,22 +62,18 @@ export default function Home() {
     load();
   }, []);
 
-  // Adapt DB events to your CarouselItem prop
+  // Featured → Carousel items (card + CTA both link to /events with filters)
   const carouselItems: CarouselItem[] = useMemo(() => {
     return (featured || []).map((e) => {
-      const img =
-        e.poster_url ||
-        e.poster_vertical_url ||
-        "/assets/fallback_event.jpg"; // optional fallback
+      const img = e.poster_url || e.poster_vertical_url || "/assets/fallback_event.jpg";
       const badge = e.clubs?.name || e.campus || "SFU";
       const subtitle =
-        e.description?.slice(0, 120) + (e.description && e.description.length > 120 ? "…" : "") ||
+        (e.description ? e.description.slice(0, 120) : "") +
+          (e.description && e.description.length > 120 ? "…" : "") ||
         "Click to see details, time & location.";
 
-      // clicking the CTA: prefill /events with a search that reliably finds the event
       const params = new URLSearchParams();
       params.set("q", e.title);
-      // optionally prefill campus/category to help narrow:
       if (e.campus) params.set("campuses", e.campus);
       if (e.category) params.set("categories", e.category);
       const ctaHref = `/events?${params.toString()}`;
@@ -88,6 +90,7 @@ export default function Home() {
     });
   }, [featured]);
 
+  // Hero search → /events with filters
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
@@ -116,21 +119,69 @@ export default function Home() {
     }
   };
 
-  // your existing static blocks (categories/clubs)
+  // Build href for Trending chip → /events with mapped categories
+  const trendHref = (trendId: string) => {
+    const mapped = TREND_TO_FILTER[trendId] || [];
+    const params = new URLSearchParams();
+    if (mapped.length) params.set("categories", mapped.join(","));
+    return `/events?${params.toString()}`;
+  };
+
+  // 🔗 Build href for Clubs Spotlight → /clubs?q=<club-name>
+  const clubHref = (name: string, categoryHint?: string) => {
+    const params = new URLSearchParams();
+    params.set("q", name);
+    // Optional: also pre-select a category tab on the clubs page
+    if (categoryHint) params.set("category", categoryHint);
+    return `/clubs?${params.toString()}`;
+  };
+
+  // Trending chips
   const categories: Category[] = [
-    { id: "getcracked", label: "Get Cracked", href: "/events?category=Community", gif: "/assets/getcracked.gif" },
-    { id: "closeknit", label: "Close Knit", href: "/events?category=Social", gif: "/assets/closeknit.gif" },
-    { id: "funsies", label: "Funsies", href: "/events?category=Friends", gif: "/assets/funsies.gif" },
-    { id: "getcrafty", label: "Get Crafty", href: "/events?category=Arts", gif: "/assets/getcrafty.gif" },
-    { id: "schmooze", label: "Schmooze", href: "/events?category=LevelUp", gif: "/assets/schmooze.gif" },
+    { id: "getcracked", label: "Get Cracked", href: trendHref("getcracked"), gif: "/assets/getcracked.gif" },
+    { id: "funsies", label: "Funsies", href: trendHref("funsies"), gif: "/assets/funsies.gif" },
+    { id: "closeknit", label: "Close Knit", href: trendHref("closeknit"), gif: "/assets/closeknit.gif" },
+    { id: "getcrafty", label: "Get Crafty", href: trendHref("getcrafty"), gif: "/assets/getcrafty.gif" },
+    { id: "schmooze", label: "Schmooze", href: trendHref("schmooze"), gif: "/assets/schmooze.gif" },
   ];
 
+  // Spotlight clubs (note: each href built with clubHref)
   const clubs: Club[] = [
-    { id: "treehouse", name: "treehouse", tagline: "A welcoming creative space where makers and dreamers bring side quests to life.", imageUrl: "/assets/treehouse.png", href: "#" },
-    { id: "blueprint", name: "SFU Blueprint", tagline: "Building innovative tech solutions that create social impact for nonprofits.", imageUrl: "/assets/blueprint.png", href: "#" },
-    { id: "wlf", name: "Work, Life, Food Garden", tagline: "Engineering real-world solutions for food security and sustainable development.", imageUrl: "assets/wlf.png", href: "#" },
-    { id: "film", name: "Film & Media Society", tagline: "Create, shoot, and share your visual stories.", emoji: "🎬", href: "#" },
-    { id: "wellness", name: "Wellness Warriors", tagline: "Mindfulness, meditation, and stress-relief weekly.", emoji: "🧘", href: "#" },
+    {
+      id: "treehouse",
+      name: "treehouse",
+      tagline: "A welcoming creative space where makers and dreamers bring side quests to life.",
+      imageUrl: "/assets/treehouse.png",
+      href: clubHref("treehouse", "Arts & Performance"),
+    },
+    {
+      id: "blueprint",
+      name: "SFU Blueprint",
+      tagline: "Building innovative tech solutions that create social impact for nonprofits.",
+      imageUrl: "/assets/blueprint.png",
+      href: clubHref("SFU Blueprint", "Technology"),
+    },
+    {
+      id: "wlf",
+      name: "Work, Life, Food Garden",
+      tagline: "Engineering real-world solutions for food security and sustainable development.",
+      imageUrl: "assets/wlf.png",
+      href: clubHref("Work, Life, Food Garden", "Environment"),
+    },
+    {
+      id: "film",
+      name: "Film & Media Society",
+      tagline: "Create, shoot, and share your visual stories.",
+      emoji: "🎬",
+      href: clubHref("Film & Media Society", "Arts & Performance"),
+    },
+    {
+      id: "wellness",
+      name: "Wellness Warriors",
+      tagline: "Mindfulness, meditation, and stress-relief weekly.",
+      emoji: "🧘",
+      href: clubHref("Wellness Warriors", "Health & Wellness"),
+    },
   ];
 
   return (
@@ -155,32 +206,21 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Hero (screen 1) */}
+        {/* Hero */}
         <section className="snap-start min-h-[100svh] flex items-center bg-white pt-20 sm:pt-24">
           <div className="container mx-auto px-6 sm:px-8 py-8 sm:py-12 w-full">
             <div className="relative w-full">
-              {/* Mascots */}
-              <img
-                src="/assets/blue_animated.gif"
-                alt="Blue mascot"
-                className="absolute left-0 bottom-0 w-64 h-64 sm:w-72 sm:h-80 object-contain translate-y-30"
-              />
-              <img
-                src="/assets/orange_animated.gif"
-                alt="Orange mascot"
-                className="absolute right-0 bottom-0 w-64 h-64 sm:w-72 sm:h-80 object-contain translate-y-30"
-              />
+              {/* mascots etc if you like */}
 
-              {/* Text content */}
+              {/* Title / Subtitle */}
               <div className="flex flex-col items-center text-center z-10 relative max-w-4xl mx-auto px-4 sm:px-6 -mt-20">
                 <h1 className="text-4xl sm:text-6xl font-bold text-chinese-blue lowercase leading-tight">
                   welcome to connectsfu
                 </h1>
                 <p className="text-lg sm:text-xl text-gray-600 max-w-xl mx-auto mb-20">
-                  Find events, make friends, and discover your SFU community! Never go to an event alone again.
+                  Find events, make friends, and discover your SFU community!
                 </p>
               </div>
-
 
               {/* Search Input with Gemini */}
               <form onSubmit={handleSearch} className="w-full max-w-2xl mx-auto mb-12 relative z-10">
@@ -188,16 +228,9 @@ export default function Home() {
                   <input
                     type="text"
                     value={searchQuery}
-                    onClick={() => console.log('Landing page input clicked')}
-                    onFocus={() => console.log('Landing page input focused')}
-                    onChange={(e) => {
-                      console.log('Landing page input changed:', e.target.value);
-                      setSearchQuery(e.target.value);
-                    }}
+                    onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Try: 'tech events next week' or 'business networking in Burnaby'"
-                    className="flex-1 bg-transparent outline-none text-gray-800 placeholder-gray-400 px-2 text-base sm:text-lg cursor-text"
-                    style={{ pointerEvents: 'auto', zIndex: 999 }}
-                    disabled={false}
+                    className="flex-1 bg-transparent outline-none text-gray-800 placeholder-gray-400 px-2 text-base sm:text-lg"
                     autoComplete="off"
                   />
                   <button
@@ -205,7 +238,7 @@ export default function Home() {
                     disabled={searchLoading}
                     className="ml-3 bg-chinese-blue hover:bg-ceil text-white font-medium px-6 py-2 rounded-full transition-all duration-200 disabled:opacity-50"
                   >
-                    {searchLoading ? 'Searching...' : 'Search'}
+                    {searchLoading ? "Searching..." : "Search"}
                   </button>
                 </div>
                 <div className="text-center w-full mt-1">
@@ -214,7 +247,6 @@ export default function Home() {
                   </p>
                 </div>
               </form>
-
             </div>
           </div>
         </section>
@@ -225,9 +257,7 @@ export default function Home() {
             <h2 className="text-3xl sm:text-4xl font-bold text-chinese-blue mb-2 lowercase">
               featured events
             </h2>
-            <p className="text-sm text-gray-600 mb-6">
-              events that are popular this week — click to learn more
-            </p>
+            <p className="text-sm text-gray-600 mb-6">events that are popular this week — click to learn more</p>
 
             <div className="mx-auto max-w-[1200px]">
               {loadingFeatured ? (
@@ -241,9 +271,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Removed duplicate Featured Events section */}
-
-        {/* Trending Categories (screen 3) */}
+        {/* Trending Categories */}
         <section className="snap-start min-h-[100svh] flex items-center">
           <div className="mx-auto w-full max-w-screen-xl px-6 sm:px-10 lg:px-16 py-12">
             <TrendingCategories
@@ -254,7 +282,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* New Clubs Spotlight (screen 4) */}
+        {/* New Clubs Spotlight — each card/button goes to /clubs?q=<name> */}
         <section className="snap-start min-h-[90svh] flex items-center">
           <div className="mx-auto w-full max-w-screen-xl px-6 sm:px-10 lg:px-16 py-12">
             <NewClubsSpotlight
@@ -264,8 +292,6 @@ export default function Home() {
             />
           </div>
         </section>
-
-
       </main>
     </>
   );

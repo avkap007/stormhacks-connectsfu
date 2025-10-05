@@ -1,11 +1,11 @@
+// app/clubs/page.tsx
 "use client";
 
 import Navbar from "@/components/Navbar";
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import clubsDataJson from "./club_list.json";
-import { clubEventsData } from "./data"; // make sure path is correct
-
 
 type ClubRaw = {
   name: string;
@@ -45,7 +45,7 @@ function categorizeClub(description: string): string[] {
   if (desc.match(/\b(business|career|professional|entrepreneur|accounting)\b/i)) {
     categories.push("Business & Professional");
   }
-  if (desc.match(/\b(music|dance|art|performance)\b/i)) {
+  if (desc.match(/\b(music|dance|art|performance|film|media)\b/i)) {
     categories.push("Arts & Performance");
   }
   if (desc.match(/\b(sport|athletic|hiking|outdoor|ski|golf)\b/i)) {
@@ -80,18 +80,37 @@ const categoryColors: Record<string, string> = {
 };
 
 export default function Clubs() {
+  const searchParams = useSearchParams();
+
+  // Always default to "All" (no category preselected)
+  const initialQ = searchParams.get("q") ?? "";
+
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(initialQ);
 
-  const allCategories = Array.from(new Set(clubsData.flatMap((club) => club.categories))).sort();
+  // If the URL changes (client nav), only sync the search "q".
+  // We intentionally IGNORE any ?category= to avoid auto-selecting a category.
+  useEffect(() => {
+    const q = searchParams.get("q") ?? "";
+    setSearchQuery(q);
+  }, [searchParams]);
 
-  const filteredClubs = clubsData.filter((club) => {
-    const matchesCategory = selectedCategory ? club.categories.includes(selectedCategory) : true;
-    const matchesSearch =
-      club.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      club.description.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
+  const allCategories = useMemo(
+    () => Array.from(new Set(clubsData.flatMap((club) => club.categories))).sort(),
+    []
+  );
+
+  const filteredClubs = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    return clubsData.filter((club) => {
+      const matchesCategory = selectedCategory ? club.categories.includes(selectedCategory) : true;
+      const matchesSearch =
+        q.length === 0 ||
+        club.name.toLowerCase().includes(q) ||
+        club.description.toLowerCase().includes(q);
+      return matchesCategory && matchesSearch;
+    });
+  }, [searchQuery, selectedCategory]);
 
   return (
     <>
@@ -110,24 +129,38 @@ export default function Clubs() {
 
           {/* Search & Filters */}
           <div className="rounded-2xl bg-white border border-gray-100 p-6 mb-10">
-            {/* Gemini-style search bar (styling only) */}
+            {/* Search bar */}
             <div className="mb-6">
-              <div className="flex items-center bg-white border border-gray-300 rounded-full shadow-md px-5 py-3 focus-within:ring-2 focus-within:ring-blue-mist/30 transition">
-                <input
-                  type="text"
-                  placeholder="Search clubs by name or description..."
-                  className="flex-1 bg-transparent outline-none text-gray-800 placeholder-gray-400 px-2 text-base sm:text-lg"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  autoComplete="off"
-                />
-                <button
-                  type="button"
-                  className="ml-3 bg-chinese-blue hover:bg-ceil text-white font-medium px-6 py-2 rounded-full transition-all duration-200"
-                >
-                  Search
-                </button>
-              </div>
+              <form
+                className="w-full"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  // Keep the URL shareable with current state.
+                  const params = new URLSearchParams();
+                  if (searchQuery.trim()) params.set("q", searchQuery.trim());
+                  // Do NOT write selectedCategory into the URL unless user picked it
+                  if (selectedCategory) params.set("category", selectedCategory);
+                  const url = `/clubs${params.toString() ? `?${params.toString()}` : ""}`;
+                  window.history.replaceState(null, "", url);
+                }}
+              >
+                <div className="flex items-center bg-white border border-gray-300 rounded-full shadow-md px-5 py-3 focus-within:ring-2 focus-within:ring-blue-mist/30 transition">
+                  <input
+                    type="text"
+                    placeholder="Search clubs by name or description..."
+                    className="flex-1 bg-transparent outline-none text-gray-800 placeholder-gray-400 px-2 text-base sm:text-lg"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    autoComplete="off"
+                  />
+                  <button
+                    type="submit"
+                    className="ml-3 bg-chinese-blue hover:bg-ceil text-white font-medium px-6 py-2 rounded-full transition-all duration-200"
+                  >
+                    Search
+                  </button>
+                </div>
+              </form>
             </div>
 
             {/* Filter Chips */}
@@ -150,9 +183,7 @@ export default function Clubs() {
                     key={category}
                     onClick={() => setSelectedCategory(category)}
                     className={`px-4 py-2 rounded-full text-sm font-medium border transition ${colorClass} ${
-                      selectedCategory === category
-                        ? "ring-2 ring-offset-2 ring-blue-mist"
-                        : "hover:opacity-80"
+                      selectedCategory === category ? "ring-2 ring-offset-2 ring-blue-mist" : "hover:opacity-80"
                     }`}
                   >
                     {category} ({count})
@@ -161,11 +192,24 @@ export default function Clubs() {
               })}
             </div>
 
+            {/* Active filter chip (category) */}
             {selectedCategory && (
               <div className="flex justify-center mt-6">
                 <div className="flex items-center gap-2 px-4 py-2 bg-blue-mist/20 text-chinese-blue rounded-full border border-blue-mist text-sm font-medium">
                   <span>Filter: {selectedCategory}</span>
                   <button onClick={() => setSelectedCategory(null)} className="text-blue-700 hover:text-blue-900">
+                    ✕
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Active search (if any) */}
+            {searchQuery.trim() && (
+              <div className="flex justify-center mt-3">
+                <div className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-full border border-gray-200 text-sm font-medium">
+                  <span>Search: “{searchQuery.trim()}”</span>
+                  <button onClick={() => setSearchQuery("")} className="hover:text-gray-900">
                     ✕
                   </button>
                 </div>
@@ -178,7 +222,7 @@ export default function Clubs() {
             Showing {filteredClubs.length} club{filteredClubs.length !== 1 ? "s" : ""}
           </div>
 
-          {/* White cards (scale on hover) */}
+          {/* Cards */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredClubs.map((club) => (
               <Link
